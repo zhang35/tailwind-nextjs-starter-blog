@@ -1,0 +1,42 @@
+---
+title: Set Up AWS IAM Identity Center
+date: '2024-09-22'
+tags: ['aws']
+draft: false
+---
+
+# Why use IAM Identity Center?
+1. Provide SSO with access to multiple accounts.
+2. Using AWS Organizations. (Must) 
+
+# User permissions not found
+You might find there is no option to manage user permissions in IAM Identity Center.
+
+![dashboard](/static/images/aws/set-up-iam-identity-center/Dashboard.png)
+
+To solve it you must:
+1. delete your IAM Identity Center (IAM Identity Center > Settings > Management).
+2. create an organization (AWS Organizations service).
+3. re-enable the IAM Identity Center, and the Multi-account permissions will appear:
+
+![account-section](/static/images/aws/set-up-iam-identity-center/account-section.png)
+
+# Create an Organization
+
+There is no additional fee to create an Organization.
+
+1. Enable these two services:
+
+![services1](/static/images/aws/set-up-iam-identity-center/services1.png)
+
+![services2](/static/images/aws/set-up-iam-identity-center/services2.png)
+
+2. Create accounts (optional):
+- IAM
+- Network
+- Dev
+
+# Enable IAM Identity Center
+1. Create users and groups.
+2. Grant multi-account permissions.
+3. Make IAM account the delegated administrator.
