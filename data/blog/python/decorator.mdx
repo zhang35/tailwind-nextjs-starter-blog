@@ -1,0 +1,97 @@
+---
+title: Python decorator examples
+date: '2024-09-22'
+tags: ['python']
+draft: false
+---
+
+# Replace a function with a different one
+
+```python
+def deco(func):
+    def inner():
+        print("running inner()")
+    return inner
+
+@deco
+def target():
+    print("running target()")
+
+target()  # running inner()
+```
+
+Adding a decorator
+```python
+@deco
+def target():
+    ...
+```
+has the same effect as writing this:
+
+```python
+target = deco(target)
+```
+
+# Add some function
+
+We are going to create a decorator that handles two common logging scenarios.
+
+```python
+import functools
+import logging
+
+logging.basicConfig(level = logging.DEBUG)
+logger = logging.getLogger()
+
+def log(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            result = func(*args, **kwargs)
+            return result
+        except Exception as e:
+            logger.exception(f"Exception raised in {func.__name__}. exception: {str(e)}")
+            raise e
+    return wrapper
+
+@log
+def foo():
+    raise Exception("Something went wrong")
+
+foo()
+# ERROR:root:Exception raised in foo. exception: Something went wrong
+# ...
+```
+
+In addition to setting up the logger, we have also used `@functools.wraps` decorator.
+If using a decorator always meant losing this information about a function, it would be a serious problem. That's why we have functools.wraps. 
+This takes a function used in a decorator and adds the functionality of copying over the function name, docstring, arguments list, etc.
+
+# A decorator with parameters
+
+```python
+def return_default(value):
+    def deco(func):
+        def wrapped(*args, **kwargs):
+            ret = func(*args, **kwargs)
+            if ret is None:
+                ret = value
+            return ret
+        return wrapped
+    return deco
+
+
+@return_default(10)
+def at_least_10(x):
+    if x >= 10:
+        return x
+
+
+@return_default("python")
+def greeting(msg):
+    return msg
+
+
+print(at_least_10(3)) # 10
+print(greeting(None)) # "python"
+```
