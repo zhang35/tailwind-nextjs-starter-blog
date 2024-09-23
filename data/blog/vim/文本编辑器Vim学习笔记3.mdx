@@ -1,0 +1,145 @@
+---
+title: 文本编辑器Vim学习笔记（三）——插件
+date: '2018-08-22 00:00:00'
+tags: ['vim']
+draft: false
+---
+
+Vim有很多强大的插件。一开始使用别人的.vimrc配置文件，添加了众多自己都不认识的插件，结果便是懵圈。
+
+应该需要根据自己的需求安装插件，掌握它们的基本用法。
+
+## 手动安装插件
+
+> 第1种解压为*.exe的插件如ctags插件。将ctags.exe拷贝到 vim74目录下;
+> 第2种解压为*.vim的插件如taglist插件。将taglist.vim、taglist.txt分别拷贝到vimfile下plugin和doc文件夹下;
+> 第3种解压为*.vmb的插件如mark插件。例如将supertab.vmb用gvim打开,并执行命令【:so %】进行安装。
+
+## 插件管理器
+手动安装插件比较繁琐，需要插件管理器。
+
+使用过pathogen、vundle和vim-plug。
+
+- pathogen，将插件整体放在~/.vim/bundle文件夹中，每个插件一个文件夹，省去分别放.vim和.doc文件的麻烦。离线状态下管理插件很方便。
+
+![pathogen管理插件](/static/images/vim/vim3-1.png)
+
+- vundle实现的是“一个.vimrc走天下”，把所需插件都列在配置文件里，在线安装、更新、删除等。
+
+- Vim-plug与Vundle类似，更新、安装都是并发，单文件，小巧快捷。
+
+最终选择了pathogen，因为国内上网环境访问github太慢，在线安装插件缓慢且容易报错。
+
+使用pathogen只需同步.vimrc和.vim文件夹即可。
+
+## pathogen使用
+ 官方链接：https://github.com/tpope/vim-pathogen
+
+### 安装
+下载pathogen.vim到~/.vim/autoload文件夹。
+```
+mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+```
+
+在~/.vimrc中添加
+```
+execute pathogen#infect()
+syntax on
+filetype plugin indent on
+```
+
+### 使用
+此时只需将完整插件放进~/.vim/bundle文件夹下即可。
+
+安装插件的例子：
+```
+cd ~/.vim/bundle && \
+git clone https://github.com/tpope/vim-sensible.git
+```
+
+生成帮助文档：
+```
+call pathogen#helptags()
+```
+
+## 常用插件
+
+### NerdTree
+左侧树形文件浏览器。
+
+开启：
+`:NERDTree`
+上/下一个父节点：
+`ctrl-k/j`
+用标签页打开：
+`t`
+跳到父/根节点：
+`p/P`
+
+### EasyMotion
+精准跳转插件。
+
+用法：
+`<leader><leader>+移动指令`
+
+\<leader>默认为`\`
+
+### CtrlP
+文件模糊搜索。
+
+用法：
+`ctrl-p`
+
+### nerdcommenter
+注释工具。
+
+用法：
+ 注释当前行：
+`<leader>-cc`
+ 反注释当前行：
+`<leader>-cu`
+ 性感方式注释：
+`<leader>-cs`
+
+### delimitMate
+自动成对填写括号。
+
+### syntastic
+语法检查，主动模式下保存文件时触发。
+
+推荐.vimrc配置：
+```
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_wq = 0
+```
+
+用法：
+手动检查：
+`SyntasticCheck `
+切换自动/手动模式：
+`SyntasticToggleMode `
+清除错误消息：
+`SyntasticReset `
+查看当前使用的checkers：
+`SyntasticInfo`
+
+### tabularize
+对齐文本。
+
+用法：
+`:Tabularize /正则表达式`
+如按逗号分隔符对齐：
+` :Tabularize /,`
+
+### supertab
+允许使用tab切换补全选项。
+
+### surround.vim
+快捷增删改括号。
