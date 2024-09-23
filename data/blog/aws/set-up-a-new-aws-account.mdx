@@ -1,0 +1,34 @@
+---
+title: Set Up a New AWS Account
+date: '2024-09-23'
+tags: ['aws']
+draft: false
+---
+
+---
+
+This blog will be updated regularly.
+
+---
+
+# Set Up IAM Identity Center and Organizations
+https://blog.genezhang.net/blog/aws/set-up-iam-identity-center
+
+# Enable IAM Access to the Billing Console
+1. Log in as the root user.
+2. Go to the Account Settings page, scroll down, and there’s a section titled IAM User Access to Billing Information. Check the Activate IAM Access check box, and then click Update:
+![activate-iam-access](/static/images/aws/set-up-a-new-aws-account/activate-iam-access.png)
+
+# Create a Zero spend budget
+
+Create a Zero spend budget from the template:
+![budget-setup](/static/images/aws/set-up-a-new-aws-account/budget-setup.png)
+
+Update the budget settings to be daily with a budget $0.01:
+![budget-setup2](/static/images/aws/set-up-a-new-aws-account/budget-setup2.png)
+
+Create another Zero spend budget. It's monthly by default:
+![budget-setup3](/static/images/aws/set-up-a-new-aws-account/budget-setup3.png)
+
+You will get notifications like:
+![budget-setup4](/static/images/aws/set-up-a-new-aws-account/budget-setup4.png)
