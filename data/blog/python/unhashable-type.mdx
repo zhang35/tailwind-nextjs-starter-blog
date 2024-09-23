@@ -1,0 +1,28 @@
+---
+title: Why list / dict objects are unhashable in python?
+date: '2024-09-23 11:20:00'
+tags: ['python']
+draft: false
+---
+
+
+```python
+d = {
+    []: "list"
+}
+TypeError: unhashable type: 'list'
+
+d = {
+    {}: "dict"
+}
+TypeError: unhashable type: 'dict'
+```
+
+Short answer: because they are **mutable** containers.
+
+If a dict was hashed, its hash would change as you changed its contents.
+
+https://stackoverflow.com/a/1957403/21196822
+
+
+
