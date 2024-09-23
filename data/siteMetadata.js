@@ -3,7 +3,7 @@ const siteMetadata = {
   title: "Gene Zhang's Blog",
   author: 'Gene Zhang',
   headerTitle: 'Gene Zhang',
-  description: "Hi. I'm Gene, a software engineer.",
+  description: "Never be afraid. Just start by doing it for 5 minutes.",
   language: 'en-us',
   theme: 'system', // system, dark or light
   siteUrl: 'https://blog.genezhang.net',
