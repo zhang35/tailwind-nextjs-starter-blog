@@ -1,0 +1,42 @@
+---
+title: SQLAlchemy default vs server_dafault
+date: '2022-12-14'
+tags: ['sql']
+draft: false
+---
+
+When defining a SQLAlchemy model, there're two main categories the ways we can assign default values to columns.
+
+## Client side
+
+1. Use `default` parameter. 
+1. Pass a scalar value, such as `0` or `True`:
+
+`points: Column = Column(Integer, default=0)`
+
+The value will be used in an `INSERT` statement.
+
+For example, when we define a model with an empty `points` and insert it into DB, it would carry a default value `0`  from the client side.
+
+The DB shcema has no default value.
+
+See more details: [https://docs.sqlalchemy.org/en/14/core/defaults.html#scalar-defaults](https://docs.sqlalchemy.org/en/14/core/defaults.html#scalar-defaults)
+
+## Server side
+
+1. User `server_default` parameter.
+1. Pass a  text value, such as `"0"`or `"2022-05-25"`(`Integer` or `Date` value would cause an error):
+
+`points: Column = Column(Integer, server_default="0")`
+
+The value will be used in the `CREATE TABLE` statement.
+
+For example, when we define a model with an empty `points` and insert it into DB, it would carry nothing from the client side, while the DB server would create a default value for it.
+
+The DB shcema has the default value.
+
+See more detalis: [https://docs.sqlalchemy.org/en/14/core/defaults.html#server-invoked-ddl-explicit-default-expressions](https://docs.sqlalchemy.org/en/14/core/defaults.html#server-invoked-ddl-explicit-default-expressions)
+
+## Summary
+
+Note that `default` has a different functionality (happens in python and not in DB) thus in most cases using `server_default` would be a better choice.

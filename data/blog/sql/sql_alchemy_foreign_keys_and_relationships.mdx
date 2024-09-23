@@ -1,0 +1,170 @@
+---
+title: SQLAlchemy Foreign keys and relationships
+date: '2022-12-14'
+tags: ['sql']
+draft: false
+---
+
+## Foreign key and relation defination
+
+We can define a foreign key and a relation in `Child` model like:
+
+```python
+class Parent(Base):
+    __tablename__ = "parent"
+    id = Column(Integer, primary_key = True)
+
+class Child(Base):
+    __tablename__ = "child"
+    id = Column(Integer, primary_key = True)
+    parentid = Column(Integer, ForeignKey(Parent.id))
+    parent = relationship(Parent)
+```
+
+Then we can add a pair of related parent and child:
+
+```python
+parent = Parent()
+c1 = Child()
+c1.parent = parent
+session.add(c1)
+session.commit()
+```
+
+Then we try to delete the `parent` :
+
+```
+session.delete(parent)
+session.commit()
+```
+
+Guess what would happen? It depends.
+
+## Foreign key constraint
+
+Different target database behaves differently when deleting a related parent model in SQLAlchemy:
+
+- `sqlite` : allow this deletion and`c1.parent` would be set `None`.
+- `postgresql` : reject this deletion and raise an error:
+
+`IntegrityError: (psycopg2.errors.ForeignKeyViolation) update or delete on table "parent" violates foreign key constraint "child_parentid_fkey" on table "child" DETAIL: Key (id)=(1) is still referenced from table "child".`
+
+We could then go on with a `postgresql`database and discover more funny things.
+
+## Bidirectional reference
+
+The above configuration establishes a `parent` object on `Child` called `Child.parent`.
+
+If we also want to reference `Child` on `Parent` side, we could add the `relationship.back_populates` parameter:
+
+```python
+class Parent(Base):
+    __tablename__ = "parent"
+    id = Column(Integer, primary_key = True)
+    children = relationship("Child", back_populates="parent")
+
+class Child(Base):
+    __tablename__ = "child"
+    id = Column(Integer, primary_key = True)
+    parentid = Column(Integer, ForeignKey(Parent.id))
+    parent = relationship("Parent", back_populates="children")
+```
+
+Or more concisely by using a single `relationship.backref` :
+
+```python
+class Parent(Base):
+    __tablename__ = "parent"
+    id = Column(Integer, primary_key = True)
+
+class Child(Base):
+    __tablename__ = "child"
+    id = Column(Integer, primary_key = True)
+    parentid = Column(Integer, ForeignKey(Parent.id))
+    parent = relationship("Parent", backref="children")
+```
+
+Then a `Parent` can reference a collection of items represented by the `Child` by called `Parent.children`.
+
+(`backref` will add a field `children` to Parent model implicitly)
+
+## Disappearance of foreign key constraint
+
+After we add a `back_populates` or `backref` parameter like above, strangely, **the foreign key constraint disappears,** even when the target database is `postgresql` .
+
+We could delete a parent without an exception and `c1.parent` would be set `None`.
+
+Full expamle code:
+
+```python
+from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy.orm import relationship
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class Parent(Base):
+    __tablename__ = "parent"
+    id = Column(Integer, primary_key = True)
+
+class Child(Base):
+    __tablename__ = "child"
+    id = Column(Integer, primary_key = True)
+    parentid = Column(Integer, ForeignKey(Parent.id))
+    parent = relationship(Parent, backref="children")
+
+# engine = create_engine("sqlite:///:memory:")
+engine = create_engine("postgresql://postgres:postgres@localhost:5432/postgres")
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+
+session = Session()
+
+parent = Parent()
+c1 = Child()
+c1.parent = parent
+
+session.add(c1)
+session.commit()
+
+print("c1.parent before deletion:", c1.parent)
+session.delete(parent)
+session.commit()
+print("c1.parent after deletion:", c1.parent)
+session.close()
+```
+
+output:
+
+```
+c1.parent before deletion: <__main__.Parent object at 0x7fc9103fb2b0>
+c1.parent after deletion: None
+```
+
+
+
+It will raise an exception by just removing the `backref` parameter.
+
+Change above code line 18 from:
+
+```
+    parent = relationship(Parent, backref="children")
+```
+
+to:
+
+```
+    parent = relationship(Parent)
+```
+
+output:
+
+```
+IntegrityError: (psycopg2.errors.ForeignKeyViolation) update or delete on table "parent" violates foreign key constraint "child_parentid_fkey" on table "child"
+DETAIL:  Key (id)=(2) is still referenced from table "child".
+```
+
+Still haven&#39;t figured out why exactly it behaves like this. I&#39;d appreciate it if you share your insights.

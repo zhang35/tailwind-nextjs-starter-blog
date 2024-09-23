@@ -1,0 +1,146 @@
+---
+title: SQLAlchemy How to define a cascade delete
+date: '2022-12-14'
+tags: ['sql']
+draft: false
+---
+
+There&#39;re some pitfalls when defining a cascade delete in SQLAlchemy.
+
+See this example:
+
+1. define a `Parent` model and a `Child`model.
+1. define a relationship in `Child` model pointing to `Parent` model and set `cascade = "all,delete"`
+
+Then if we delete a `Parent` object, will the related `Child` object also be deleted? The answer is no.
+
+## The wrong way
+
+
+
+```python
+from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy.orm import relationship
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+class Parent(Base):
+    __tablename__ = "parent"
+    id = Column(Integer, primary_key = True)
+
+class Child(Base):
+    __tablename__ = "child"
+    id = Column(Integer, primary_key = True)
+    parentid = Column(Integer, ForeignKey(Parent.id))
+    parent = relationship(Parent, cascade = "all,delete", backref = "children")
+
+engine = create_engine("sqlite:///:memory:")
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+
+session = Session()
+
+parent = Parent()
+c1 = Child()
+c2 = Child()
+c3 = Child()
+parent.children.append(c1)
+parent.children.append(c2)
+parent.children.append(c3)
+
+session.add(parent)
+session.commit()
+
+print("Before delete, children = {0}".format(session.query(Child).count()))
+print("Before delete, parent = {0}".format(session.query(Parent).count()))
+
+session.delete(parent)
+session.commit()
+
+print("After delete, children = {0}".format(session.query(Child).count()))
+print("After delete, parent = {0}".format(session.query(Parent).count()))
+
+session.close()
+```
+
+Output:
+
+```
+Before delete, children = 3
+Before delete, parent = 1
+After delete, children = 3
+After delete, parent = 0
+```
+
+The children are not affected.
+
+Then we chose to delete the `Child` object instead, replacing:
+
+```python
+session.delete(parent)
+```
+
+with:
+
+```
+session.delete(c1)
+```
+
+Output:
+
+```
+Before delete, children = 3
+Before delete, parent = 1
+After delete, children = 2
+After delete, parent = 0
+```
+
+Unexpectedly, when we delete a child, its parent is also deleted.
+
+## The right way
+
+Just modify the model defining codes as below:
+
+```python
+class Parent(Base):
+    __tablename__ = "parent"
+    id = Column(Integer, primary_key = True)
+    children = relationship('Child', cascade = "all,delete", backref = "parent")
+
+class Child(Base):
+    __tablename__ = "child"
+    id = Column(Integer, primary_key = True)
+    parentid = Column(Integer, ForeignKey(Parent.id))
+
+```
+
+Output:
+
+```
+Before delete, children = 3
+Before delete, parent = 1
+After delete, children = 0
+After delete, parent = 0
+```
+
+now the `Child` objects are correctlly deleted.
+
+## Key points
+
+**In which object you define your relationship with** `cascade = "all,delete"`**, deleting which object will cause the cascade deletion.**
+
+
+
+There&#39;s also an alternative way to define the relationship on the `Child` side : define the cascade **on the backref** like:
+
+```
+parent = relationship(Parent, backref=backref("children", cascade="all,delete"))
+```
+
+## Reference:
+
+[https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete](https://stackoverflow.com/questions/5033547/sqlalchemy-cascade-delete)
