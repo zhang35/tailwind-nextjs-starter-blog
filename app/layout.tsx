@@ -1,7 +1,9 @@
 import 'css/tailwind.css'
 import 'pliny/search/algolia.css'
 import 'remark-github-blockquote-alert/alert.css'
+
 import { Analytics as VercelAnalytics } from '@vercel/analytics/react'
+import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next'
 
 import { Space_Grotesk } from 'next/font/google'
 import { Analytics, AnalyticsConfig } from 'pliny/analytics'
@@ -107,6 +109,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </SectionContainer>
         </ThemeProviders>
         <VercelAnalytics />
+        <VercelSpeedInsights />
       </body>
     </html>
   )
