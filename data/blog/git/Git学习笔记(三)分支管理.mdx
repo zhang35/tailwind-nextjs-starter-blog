@@ -1,0 +1,140 @@
+---
+title: Git学习笔记(三)分支管理
+date: '2018-05-05 00:00:02'
+tags: ['git']
+draft: false
+---
+
+## Git分支原理
+
+新建dev分支：
+
+![](/static/images/git/git3-1.png)
+
+在dev分支上提交：
+
+![](/static/images/git/git3-2.png)
+
+切回到master并合并dev：
+
+![](/static/images/git/git3-3.png)
+
+团队工作流程：
+
+![](/static/images/git/git3-4.png)
+
+（图片来自廖雪峰Git教程）
+
+## 新建分支：
+
+查看当前分支：
+`$ git branch`
+
+新建、切换分支：
+`$ git branch dev  `
+`$ git checkout dev `
+
+或者简化命令，直接新建并切换分支：
+
+`$ git checkout -b dev`
+
+以后的提交就是在dev上的，master不受影响。
+
+## 合并分支：
+
+切回master，此时代码恢复到master时状态：
+
+`$ git checkout master `
+
+将dev合并到当前分支master上：
+
+`$ git merge dev `
+
+### 普通模式合并
+合并分支时，加上`--no-ff`参数就可以用普通模式合并：
+
+`$ git merge --no-ff dev `
+
+在merge时会生成一个新的commit。而默认的fast forward合并就看不出来曾经做过合并。
+
+### 解决冲突
+
+如果两个分支都提交了对同一文件的更改，合并二者将产生冲突：
+
+```
+$ git merge dev
+Auto-merging newFile.txt
+CONFLICT (content): Merge conflict in newFile.txt
+Automatic merge failed; fix conflicts and then commit the result.
+```
+
+git status查看状态如下：
+```
+You have unmerged paths.
+  (fix conflicts and run "git commit")
+  (use "git merge --abort" to abort the merge)
+
+Unmerged paths:
+  (use "git add <file>..." to mark resolution)
+
+	both modified:   newFile.txt
+```
+
+冲突文件已经记录了冲突，可直接编辑：
+```
+$ vim newFile.txt 
+
+  1 <<<<<<< HEAD                                                                
+  2 master add
+  3 =======
+  4 dev add
+
+```
+修改后，即可提交成功。
+
+这说明`$ git merge`命令即使遇到冲突也会发生作用，继续合并且标记了冲突，产生了新的修改。
+
+## 删除分支
+
+`$ git branch -d dev`
+
+如dev含有未合并的更改，则可用-D强制删除：
+
+`git branch -D dev`
+
+## 暂存现场
+
+情景：为解决master分支的一个bug，需临时从dev分支切过去。
+
+这时如果在dev上修改了文件，但未提交，切换分支时会提示：
+```
+$ git co master
+error: Your local changes to the following files would be overwritten by checkout:
+	newFile.txt
+Please commit your changes or stash them before you switch branches.
+Aborting
+```
+
+“要么提交，要么暂存，否则这些更改就会消失。”
+
+如果还不想提交，那就先stash起来：
+
+`$ git stash`
+
+然后切换到其它分支改改改。
+
+完事后再切回到dev，查看stash列表：
+```
+$ git stash list
+stash@{0}: WIP on dev: 471716b dev`
+```
+
+恢复现场：
+
+一是用git stash apply恢复，但是恢复后，还需要用git stash drop来删除stash内容；
+
+另一种方式是用git stash pop，恢复的同时把stash内容也删了：
+
+`$ git stash pop`
+
+这样dev上未提交的更改又出现了。
