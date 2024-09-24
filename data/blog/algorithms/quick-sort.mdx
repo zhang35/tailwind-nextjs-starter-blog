@@ -1,0 +1,46 @@
+---
+title: Quick Sort
+date: '2024-09-24'
+tags: ['algorithms']
+draft: false
+---
+
+```python
+def partition(arr, low, high):
+    pivot = arr[high]
+    i = low
+    
+    # we start from the leftmost element and keep track of the index of smaller (or equal) elements as i.
+    # While traversing, if we find a smaller element, we swap the current element with arr[i].
+    # Otherwise, we ignore the current element.
+    for j in range(low, high):
+        if arr[j] < pivot:
+            arr[i], arr[j] = arr[j], arr[i]
+            i += 1
+    
+    # Move pivot after smaller elements and return its position
+    arr[i], arr[high] = arr[high], arr[i]
+    return i
+
+
+def quickSort(array, low, high):
+    if low < high:
+        # find pivot element such that
+        # element smaller than pivot are on the left
+        # element greater than pivot are on the right
+        p = partition(array, low, high)
+
+        quickSort(array, low, p - 1)
+
+        quickSort(array, p + 1, high)
+
+
+data = [1, 7, 4, 1, 10, 9, -2]
+print(data)
+
+quickSort(data, 0, len(data)-1)
+print(data)
+
+# [1, 7, 4, 1, 10, 9, -2]
+# [-2, 1, 1, 4, 7, 9, 10]
+```
