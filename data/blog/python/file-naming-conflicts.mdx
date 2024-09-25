@@ -1,0 +1,27 @@
+---
+title: Avoid file naming conflicts with the standard library
+date: '2024-09-25 09:00:00'
+tags: ['python']
+draft: false
+---
+
+Given the file structure:
+```
+% tree -L 3
+.
+├── heapq.py
+├── merge_sort.py
+└── quick_sort.py    
+```
+
+I ran heapq.py in VSCode, but all the python files were executed. And an error occured:
+
+```bash
+AttributeError: partially initialized module 'heapq' has no attribute 'heapify' (most likely due to a circular import)
+```
+
+why? 
+
+This is because the file was named `heapq.py`, which conflicted with Python's standard library module `heapq`.
+
+To avoid any issues, rename the file to something unique like `heapq_example.py`.
