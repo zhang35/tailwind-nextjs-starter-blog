@@ -1,0 +1,30 @@
+---
+title: Reverse Linked List II
+date: '2024-09-27'
+tags: ['leetcode']
+---
+
+[92.Reverse Linked List II](https://leetcode.com/problems/reverse-linked-list-ii/description/)
+
+```python
+class Solution:
+    def reverseBetween(self, head: Optional[ListNode], left: int, right: int) -> Optional[ListNode]:
+        dummy_head = ListNode(-1, head)
+        pre = dummy_head
+
+        for _ in range(left - 1):
+            pre = pre.next
+
+        cur = pre.next
+        for _ in range(right - left):
+            next_node = cur.next
+            cur.next = next_node.next
+            next_node.next = pre.next
+            pre.next = next_node
+
+        return dummy_head.next    
+```
+
+The picture below is from: https://leetcode.com/problems/reverse-linked-list-ii/solutions/30709/talk-is-cheap-show-me-the-code-and-drawing:
+
+<img src="https://leetcode.com/uploads/files/1490008792563-reversed_linked_list.jpeg" alt="2-3" />
