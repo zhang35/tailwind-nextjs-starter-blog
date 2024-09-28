@@ -1,0 +1,29 @@
+---
+title: Define a two-dimensional array
+date: '2024-09-28 09:30:00'
+tags: ['python']
+draft: false
+---
+
+# Right way
+
+```python
+matrix = [[0] * n for _ in range(m)]
+```
+
+# Wrong way
+
+```python
+[[0] * n] * m
+```
+
+This will produce unexpected behavior.
+
+It uses the same array m times and hence changing one impacts all rows.
+
+```python
+test = [[0] * 3] * 5
+test[1][1]=7
+print(test)
+# [[0, 7, 0], [0, 7, 0], [0, 7, 0], [0, 7, 0], [0, 7, 0]]
+```
