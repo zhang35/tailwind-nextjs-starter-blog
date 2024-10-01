@@ -1,0 +1,25 @@
+---
+title: Manage Python Versions on Mac with Pyenv
+date: '2024-10-01'
+tags: ['mac']
+draft: false
+---
+
+# Use Pyenv
+
+```bash
+brew install pyenv
+pyenv install 3.12.0
+pyenv global 3.12.0
+```
+
+# Set up your shell environment for Pyenv
+For Zsh:
+
+Run the following to add the commands to ~/.zprofile:
+
+```bash
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zprofile
+echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zprofile
+echo 'eval "$(pyenv init -)"' >> ~/.zprofile
+```
