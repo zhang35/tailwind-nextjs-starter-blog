@@ -1,0 +1,33 @@
+---
+title: AWS API Gateway - REST API vs. HTTP API
+date: '2024-10-01'
+tags: ['aws']
+draft: false
+---
+
+# Overview
+
+REST APIs support more features than HTTP APIs, while HTTP APIs are designed with minimal features so that they can be offered at a lower price and have a lower latency.
+
+[Video: What’s the Difference Between AWS REST API & HTTP API?](https://www.youtube.com/watch?v=O8RKpHQt6l4)
+
+| | function | price | speed |
+| --- | --- | --- | -- |
+| HTTP API | | ✅ | ✅ |
+| REST API | ✅ | | |
+
+# Functionality
+Choose REST APIs if you need features such as:
+- API keys
+- Per-client throttling
+- Request validation
+- AWS WAF integration
+- API endpoints
+
+# Cost
+HTTP APIs is at least 71% lower cost compared to API Gateway REST APIs.
+
+# Speed
+HTTP APIs offers up to 60% reduction in latency.
+
+![Speed Difference](/static/images/aws/rest-api-vs-http-api/speed.png)
