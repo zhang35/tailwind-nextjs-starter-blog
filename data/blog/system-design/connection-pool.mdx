@@ -1,0 +1,17 @@
+---
+title: Improve database performance with connection pooling
+date: '2024-10-13'
+tags: ['system-design']
+draft: false
+---
+
+# What is connection pooling
+
+Connection pooling uses **a cache of database connections** that can be reused when future requests to the database are required.
+
+# Advantages
+
+1. Save memory: with PostgreSQL, each new connection can take up to 1.3MB in memory.
+2. Avoid max connection limits: PostgreSQL allows 100 concurrent connections by default. Exceeding the stated number will result in an error stating "too many clients already".
+3. Faster response time: no need to build a new TCP connection.
+4. Better manage traffic peaks without causing outages.
