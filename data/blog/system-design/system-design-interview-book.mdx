@@ -1,6 +1,6 @@
 ---
-title: “System Design Interview - An Insider's Guide” notes
-date: '2024-09-26'
+title: “System Design Interview - An Insider's Guide” notes (Chapter1-3)
+date: '2024-10-10'
 tags: ['system-design']
 draft: false
 ---
@@ -27,6 +27,7 @@ How we scale our system to support millions of users:
 ![2-1](/static/images/system-design-interview-book/2-1.png)
 
 ## Availability numbers
+
 ![2-2](/static/images/system-design-interview-book/2-2.png)
 
 ## Latency
@@ -57,12 +58,57 @@ Notes
 1 us = 10^-6 seconds = 1,000 ns
 1 ms = 10^-3 seconds = 1,000 us = 1,000,000 ns
 ```
+
 [Google Sheet with grpah](https://docs.google.com/spreadsheets/d/1VooP6uqc5HO0rqj5TtdUNKC8Bx2pBsOjMTDv8GnO8kA/edit?gid=0#gid=0)
 
-<img src="/static/images/system-design-interview-book/2-3.png" alt="2-3" style={{ width: '100%' }} />
+<img
+  src="/static/images/system-design-interview-book/2-3.png"
+  alt="2-3"
+  style={{ width: '100%' }}
+/>
 
-<img src="/static/images/system-design-interview-book/2-4.png" alt="2-4" style={{ width: '100%' }} />
+<img
+  src="/static/images/system-design-interview-book/2-4.png"
+  alt="2-4"
+  style={{ width: '100%' }}
+/>
 
-<img src="/static/images/system-design-interview-book/2-5.png" alt="2-5" style={{ width: '100%' }} />
+<img
+  src="/static/images/system-design-interview-book/2-5.png"
+  alt="2-5"
+  style={{ width: '100%' }}
+/>
 
 # CHAPTER 3: A FRAMEWORK FOR SYSTEM DESIGN INTERVIEWS
+
+## Step 1: Understand the problem and establish design scope
+
+Ask questions to understand the exact requirements:
+
+- What specific features are we going to build?
+- How many users does the product have?
+- How fast does the company anticipate to scale up? What are the anticipated scales in 3
+  months, 6 months, and a year?
+- What is the company’s technology stack? What existing services you might leverage to
+  simplify the design?
+
+## Step 2: Propose high-level design and get buy-in
+
+Collaborate with the interviewer during the process:
+
+- Come up with an initial blueprint for the design. Ask for feedback. Treat your
+  interviewer as a teammate and work together. Many good interviewers love to talk and get
+  involved.
+- Draw box diagrams with key components on the whiteboard or paper. This might include
+  clients (mobile/web), APIs, web servers, data stores, cache, CDN, message queue, etc.
+- Do back-of-the-envelope calculations to evaluate if your blueprint fits the scale
+  constraints. Think out loud. Communicate with your interviewer if back-of-the-envelope is
+  necessary before diving into it.
+
+## Step 3 - Design deep dive
+
+Work with the interviewer to identify and prioritize components in the architecture. In most cases, the interviewer may want you to dig into details of some system components.
+
+For URL shortener, it is interesting to dive into
+the hash function design that converts a long URL to a short one. For a chat system, how to
+reduce latency and how to support online/offline status are two interesting topics.
