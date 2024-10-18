@@ -1,0 +1,50 @@
+---
+title: (Solved) 微信云托管 requests.exceptions.SSLError SSLCertVerificationError certificate verify failed - self signed certificate
+date: '2024-10-18 08:00:00'
+tags: ['wechat mini-program']
+---
+
+# 问题描述
+
+在微信云托管(wxcloudrun)的flask容器中，调用了https请求来获取用户openid：
+
+```python
+def request_openid(wechat_code: str, app_id: str, app_secret: str) -> Optional[str]:
+    response = requests.get(
+        url=f'https://api.weixin.qq.com/sns/jscode2session?appid={app_id}&secret={app_secret}&js_code={wechat_code}&grant_type=authorization_code',
+    )
+    session_data = response.json()
+    return session_data.get("openid")
+```
+
+本地测试可以使用，部署到云托管后报错：
+
+```
+requests.exceptions.SSLError (SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: self signed certificate
+```
+
+# 解决方法
+
+查看官方文档：[证书与 HTTPS](https://developers.weixin.qq.com/miniprogram/dev/wxcloudrun/src/guide/weixin/open.html#%E4%BD%BF%E7%94%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9)
+
+其建议:
+
+> 使用云调用时建议使用 HTTP 协议以获得更好的性能
+
+示例代码中，call `api.weixin.qq.com` 时用的就是http。
+
+所以做如下改动后重新部署：
+
+```
+    response = requests.get(
+        url=f'https://api.weixin.qq.com/sns/jscode2session?appid={app_id}&secret={app_secret}&js_code={wechat_code}&grant_type=authorization_code',
+    )
+```
+
+请求成功，返回结果：
+
+```
+{
+    "userId": "xxx"
+}
+```
