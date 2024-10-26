@@ -1,0 +1,38 @@
+---
+title: How to specify multiple users in .gitconfig
+date: '2024-10-26 11:36:02'
+tags: ['git']
+draft: false
+---
+
+# Solution
+Global config ~/.gitconfig
+
+```
+[user]
+    name = John Doe
+    email = john@gmail.com
+
+[includeIf "gitdir:~/work/"]
+    path = ~/work/.gitconfig
+```
+
+Work specific config ~/work/.gitconfig
+
+```
+[user]
+    email = john.doe@company.tld
+```
+
+# Test
+
+Clone a repo into `~/work/test-repo`. Open the teminal and check the user email by:
+
+```
+% git config --get user.email
+john.doe@company.tld
+```
+
+# Reference
+
+https://stackoverflow.com/a/43654115
