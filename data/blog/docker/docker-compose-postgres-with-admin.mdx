@@ -1,0 +1,68 @@
+---
+title: Postgresql DB with pgadmin docker compose file
+date: '2024-10-26 13:44:02'
+tags: ['docker']
+draft: false
+---
+
+`compose.yaml`:
+
+```yaml
+version: '3'
+services:
+  db:
+    image: postgres:15
+    restart: always
+    shm_size: 512mb
+    environment:
+      POSTGRES_PASSWORD: postgres_pwd
+    ports:
+      - 54321:5432
+    networks:
+      - all
+  admin:
+    image: dpage/pgadmin4:8
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - 54322:80
+    networks:
+      - all
+
+networks:
+  all:
+    driver: bridge
+```
+
+Open PgAdmin page at: http://localhost:54322/. Log in with:
+
+`admin@admin.com`
+
+`admin`
+
+Connect the DB with:
+
+|                        |              |
+| ---------------------- | :----------: |
+| `Host name`            |      db      |
+| `Maintenance database` |   postgres   |
+| `Username`             |   postgres   |
+| `Password`             | postgres_pwd |
+
+Launch it with:
+
+`docker compose up -d`
+
+# Note
+
+Docker creates a virtual network where each service can communicate with others using their service name as a hostname.
+
+Here’s why it works:
+
+1. Service Name as Hostname: Docker automatically assigns the service name (like db) as a DNS hostname within the network, so other containers can resolve it. In your case, admin (pgAdmin) can connect to the db service by referring to db as the hostname.
+2. Internal Networking: Inside the Docker network, the services are connected to each other through an internal bridge network. Docker Compose ensures that the containers can resolve each other’s IP addresses based on their service names.
+3. Isolation from the Host: The hostnames and internal ports are only visible within the network that Docker creates. You use localhost or 127.0.0.1 from outside the Docker network (e.g., on your machine), but within the containers, services are identified by their service names.
+
+So when you’re inside the admin service (pgAdmin), you can connect to the Postgres service (db) using the hostname db and the internal port 5432.
