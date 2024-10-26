@@ -5,22 +5,24 @@ tags: ['git']
 draft: false
 ---
 
-# Solution
+# Support Multiple Users
+
 Global config ~/.gitconfig
 
-```
+```bash
 [user]
-    name = John Doe
+    name = John Personal
     email = john@gmail.com
 
 [includeIf "gitdir:~/work/"]
     path = ~/work/.gitconfig
 ```
 
-Work specific config ~/work/.gitconfig
+Work specific config `~/work/.gitconfig`
 
 ```
 [user]
+    name = John Work
     email = john.doe@company.tld
 ```
 
@@ -28,11 +30,38 @@ Work specific config ~/work/.gitconfig
 
 Clone a repo into `~/work/test-repo`. Open the teminal and check the user email by:
 
-```
+```bash
 % git config --get user.email
 john.doe@company.tld
+```
+
+# Multiple SSH access solution
+
+If you are using SSH to access the repos, follow these steps to generate a new SSH key for the work accounts:
+
+1. [Check for existing SSH keys](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/checking-for-existing-ssh-keys)
+2. [Generate a new SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+3. [Adding a new SSH key to your GitHub account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
+
+For example, if you have generated a new key named `id_ed25519_work`, test it by running:
+
+```bash
+% ssh -i ~/.ssh/id_ed25519_work -o IdentitiesOnly=yes -T git@github.com
+
+Hi xxx! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+Then append this section into `~/work/.gitconfig`:
+
+```
+[core]
+    sshCommand = ssh -i ~/.ssh/id_ed25519_work -o IdentitiesOnly=yes
 ```
 
 # Reference
 
 https://stackoverflow.com/a/43654115
+
+https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-your-personal-account/managing-multiple-accounts
+
+https://git-scm.com/docs/git-config#Documentation/git-config.txt-coresshCommand
