@@ -6,7 +6,7 @@ const siteMetadata = {
   description: "Never be afraid. Just start by doing it for 5 minutes.",
   language: 'en-us',
   theme: 'system', // system, dark or light
-  siteUrl: 'https://blog.genezhang.net',
+  siteUrl: 'https://genezhang.net',
   siteRepo: 'https://github.com/zhang35/tailwind-nextjs-starter-blog',
   siteLogo: `${process.env.BASE_PATH || ''}/static/images/logo.png`,
   socialBanner: `${process.env.BASE_PATH || ''}/static/images/twitter-card.png`,
