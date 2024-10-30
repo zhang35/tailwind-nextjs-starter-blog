@@ -1,0 +1,14 @@
+---
+title: How to find (and kill) process using port 3000
+date: '2024-10-30'
+tags: ['mac']
+draft: false
+---
+
+```bash
+lsof -i tcp:3000
+```
+
+```bash
+kill -9 <PID>
+```
