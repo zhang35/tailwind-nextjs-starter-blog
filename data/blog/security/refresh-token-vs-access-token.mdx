@@ -1,0 +1,23 @@
+---
+title: Why Does OAuth v2 Have Both Access and Refresh Tokens?
+date: '2024-10-30'
+tags: ['security']
+---
+
+Why not just make the `access_token` last as long as the `refresh_token` and not have a `refresh_token`?
+
+[@catchdave on stackoverflow:](https://stackoverflow.com/a/7209263)
+
+The idea of refresh tokens is that if an access token is compromised, because it is short-lived, the attacker has a limited window in which to abuse it.
+
+Refresh tokens, if compromised, are useless because the attacker requires the client id and secret in addition to the refresh token in order to gain an access token.
+
+Having said that, because every call to both the authorization server and the resource server is done over SSL - including the original client id and secret when they request the access/refresh tokens - I am unsure as to how the access token is any more "compromisable" than the long-lived refresh token and clientid/secret combination.
+
+This of course is different to implementations where you don't control both the authorization and resource servers.
+
+Here is a good thread talking about uses of refresh tokens: OAuth Archives.
+
+A quote from the above, talking about the security purposes of the refresh token:
+
+> Refresh tokens... mitigates the risk of a long-lived access_token leaking (query param in a log file on an insecure resource server, beta or poorly coded resource server app, JS SDK client on a non https site that puts the access_token in a cookie, etc)
