@@ -1,0 +1,31 @@
+---
+title: Git reset examples
+date: '2024-10-26 11:36:02'
+tags: ['git']
+draft: false
+---
+
+`git reset HEAD~` - The last commit is gone, all its contents are kept, unstaged
+
+`git reset --soft HEAD~` - The last commit is gone, all its contents are kept, staged
+
+`git reset --hard HEAD~` - The last commit is gone, its contents are gone.
+
+`git reset` simply moves your current branch (HEAD) to a specified commit. The switches determine what will happen with the working tree (your actual files) and staging area.
+
+You can think of --hard being like moving your HEAD to a new commit, followed by a checkout. All files in your working tree will be overwritten with what's in the commit you're moving to. The staging area will be overwritten too, so there will be no new changes to commit afterwards.
+
+The difference between `soft` and `mixed` is whether your current files will appear as "staged" (aka. added) or not. Mixed (the default) will copy the files from the destination commit to the "staging area" (aka. index). Since your working tree will now differ from the staging area, and the staging area equals the new HEAD, your files will effectively be "unstaged" (eg. ready to be added)
+
+soft will leave the staging area intact (which will likely be in the same state as your working tree), which will now differ from the new HEAD. This will effectively make your files "staged" with the content they had in the previous HEAD, ready to be committed.
+
+Personally I only use hard and mixed (omitting the switch) and add the files myself if needed.
+
+# Reset a file to a specific commit
+
+Reset one file to be sync with main:
+
+```
+git checkout origin/main package.json
+
+```
