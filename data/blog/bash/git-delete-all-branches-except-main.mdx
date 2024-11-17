@@ -1,0 +1,15 @@
+---
+title: Git delete all branches except main
+date: '2024-11-17 15:05:02'
+tags: ['bash']
+---
+
+```bash
+git branch | grep -v "main" | xargs git branch -D
+```
+
+This command will delete all branches except `main`:
+
+1. `git branch`: Lists all local branches in your repository.
+2. `grep -v "main"`: Filters out the line containing "main". `-v` inverts the match, so branches named main are excluded from the output.
+3. `xargs git branch -D`: Takes the list of branches (excluding main) and passes each branch name as an argument to the git branch -D command. `git branch -D` forcibly deletes a branch, even if it hasn’t been fully merged.
