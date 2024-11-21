@@ -1,0 +1,38 @@
+---
+title: Set up AWS CLI SSO login
+date: '2024-11-21'
+tags: ['aws']
+---
+
+Steps to configure the AWS CLI to retrieve credentials automatically using the aws configure sso.
+
+1. Add a new profile to the `~/.aws/config` file:
+
+```bash
+[profile dev]
+sso_start_url = https://xxx.awsapps.com/start
+sso_region = us-west-2
+sso_account_id = <your_account_id>
+sso_role_name = <your_role_name>
+region = us-west-2
+output = json
+```
+
+2. SSO login with the profile:
+
+```shell
+aws sso login --profile dev
+```
+
+3. Run commands with `--profile`:
+
+```shell
+aws s3 ls --profile workload-dev
+```
+
+or set the profile as an environment variable:
+
+```shell
+export AWS_PROFILE=dev
+aws s3 ls
+```
