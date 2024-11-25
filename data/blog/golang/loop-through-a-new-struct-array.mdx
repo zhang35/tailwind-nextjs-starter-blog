@@ -1,0 +1,28 @@
+---
+title: Test with a newly constructed struct array
+date: '2024-11-26 07:21:00'
+tags: ['golang']
+---
+
+```go
+func TestFunction(t *testing.T) {
+	assert := require.New(t)
+
+	for _, testCase := range []struct {
+		input    string
+		expected []string
+	}{
+		{
+			input:    "{a, b}",
+			expected: []string{},
+		},
+		{
+			input:    "{2}",
+			expected: []string{"2"},
+		},
+
+	} {
+		assert.Equal(testCase.expected, SomeFunction(testCase.input))
+	}
+}
+```
