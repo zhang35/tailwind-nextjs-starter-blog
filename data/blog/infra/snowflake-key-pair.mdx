@@ -1,0 +1,67 @@
+---
+title: How to create a Key-pair authentication connection in Snowflake
+date: '2024-11-26 10:06:02'
+tags: ['infra']
+draft: false
+---
+
+# Prerequisites
+
+1. Login with a user with the `ACCOUNTADMIN` role with `snowsql`.
+
+```sql
+% snowsql -a <account> -u user_name;
+```
+
+2. Create database and load data:
+
+https://docs.snowflake.com/en/user-guide/tutorials/snowflake-in-20minutes
+
+# Create a key pair connection
+
+1. Create a key pair following: https://docs.snowflake.com/en/user-guide/key-pair-auth
+
+2. Create a user and assign the public key:
+
+```sql
+CREATE USER rsa_user PASSWORD='Snow@123' DEFAULT_ROLE = public;
+```
+
+```sql
+ALTER USER RSA_USER SET RSA_PUBLIC_KEY='MII...';
+```
+
+3. Grant permissions:
+
+```sql
+GRANT USAGE on WAREHOUSE COMPUTE_WH to role PUBLIC;
+GRANT USAGE on DATABASE SF_TUTS to role PUBLIC;
+GRANT USAGE on SCHEMA PUBLIC to role PUBLIC;
+GRANT ALL on TABLE EMP_BASIC to role PUBLIC;
+```
+
+4.  Optional: set default warehouse:
+
+```sql
+ALTER USER RSA_USER SET DEFAULT_WAREHOUSE = COMPUTE_WH;
+```
+
+# Test connection
+
+```bash
+% snowsql -a bawupxs-dcb65020 -u rsa_user --private-key-path ~/.rsa_key.p8
+```
+
+```sql
+use warehouse COMPUTE_WH;
+use database SF_TUTS;
+use schema PUBLIC;
+
+select * from EMP_BASIC limit 3;
+
+insert into EMP_BASIC (FIRST_NAME,LAST_NAME) values
+('jane1', 'doe1'),
+('jane2', 'doe2');
+
+delete from EMP_BASIC where FIRST_NAME in ('jane1', 'jane2');
+```
