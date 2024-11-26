@@ -1,0 +1,72 @@
+---
+title: How to create a custom SnowFlake OAuth integration
+date: '2024-10-28 19:06:02'
+tags: ['infra']
+draft: false
+---
+
+```sql
+CREATE SECURITY INTEGRATION oauth_int_test
+  TYPE = oauth
+  ENABLED = true
+  OAUTH_CLIENT = custom
+  OAUTH_CLIENT_TYPE = 'CONFIDENTIAL'
+  OAUTH_REDIRECT_URI = 'http://localhost:8080/callback'
+  OAUTH_ALLOW_NON_TLS_REDIRECT_URI = TRUE
+  OAUTH_ISSUE_REFRESH_TOKENS = TRUE
+  OAUTH_REFRESH_TOKEN_VALIDITY = 86400;
+```
+
+```sql
+DESC SECURITY INTEGRATION oauth_int_test
+                                           ;
++---------------------------------------+---------------+---------------------------------------------------------------------------------------------------------------------------------+------------------+
+| property                              | property_type | property_value                                                                                                                  | property_default |
+|---------------------------------------+---------------+---------------------------------------------------------------------------------------------------------------------------------+------------------|
+| ENABLED                               | Boolean       | true                                                                                                                            | false            |
+| OAUTH_REDIRECT_URI                    | String        | http://localhost:8080/callback                                                                                                  |                  |
+| OAUTH_CLIENT_TYPE                     | String        | CONFIDENTIAL                                                                                                                    | CONFIDENTIAL     |
+| OAUTH_ISSUE_REFRESH_TOKENS            | Boolean       | true                                                                                                                            | true             |
+| OAUTH_REFRESH_TOKEN_VALIDITY          | Integer       | 86400                                                                                                                           | 7776000          |
+| OAUTH_ENFORCE_PKCE                    | Boolean       | false                                                                                                                           | false            |
+| OAUTH_USE_SECONDARY_ROLES             | String        | NONE                                                                                                                            | NONE             |
+| OAUTH_CLIENT_ID                       | String        | wjNLQO5MRYQ+LYsMYon/KWog9LQ=                                                                                                    |                  |
+| OAUTH_AUTHORIZATION_ENDPOINT          | String        | https://vxb72799.snowflakecomputing.com/oauth/authorize                                                                         |                  |
+| OAUTH_TOKEN_ENDPOINT                  | String        | https://vxb72799.snowflakecomputing.com/oauth/token-request                                                                     |                  |
+| OAUTH_ALLOWED_AUTHORIZATION_ENDPOINTS | List          | https://vxb72799.snowflakecomputing.com/oauth/authorize,https://ahonkuo-pdb24655.snowflakecomputing.com/oauth/authorize         | []               |
+| OAUTH_ALLOWED_TOKEN_ENDPOINTS         | List          | https://vxb72799.snowflakecomputing.com/oauth/token-request,https://ahonkuo-pdb24655.snowflakecomputing.com/oauth/token-request | []               |
+| PRE_AUTHORIZED_ROLES_LIST             | List          |                                                                                                                                 | []               |
+| BLOCKED_ROLES_LIST                    | List          | ACCOUNTADMIN,ORGADMIN,SECURITYADMIN                                                                                             | []               |
+| OAUTH_ALLOW_NON_TLS_REDIRECT_URI      | Boolean       | true                                                                                                                            | false            |
+| OAUTH_CLIENT_RSA_PUBLIC_KEY_FP        | String        |                                                                                                                                 |                  |
+| OAUTH_CLIENT_RSA_PUBLIC_KEY_2_FP      | String        |                                                                                                                                 |                  |
+| NETWORK_POLICY                        | String        |                                                                                                                                 |                  |
+| COMMENT                               | String        |                                                                                                                                 |                  |
++---------------------------------------+---------------+---------------------------------------------------------------------------------------------------------------------------------+------------------+
+
+```
+
+Both the client ID and client secret can be retrieved using the `SYSTEM$SHOW_OAUTH_CLIENT_SECRETS` function:
+
+```
+SELECT SYSTEM$SHOW_OAUTH_CLIENT_SECRETS('OAUTH_INT_TEST');
+```
+
+Note the : character between client_id and client_secret.
+
+# Errors
+
+## Client id is not found
+
+"OAuth client integration with the given client id is not found."
+
+The client_id is used in the query url. Make sure it is encoded!
+
+Any character that is not an alphabetic character, a number, or a reserved character being used needs to be encoded.
+
+In postman, just highlight and right click the part of url you want to encode. Select `encodeURIComponent`.
+
+## Invalid consent request
+
+Once attempting to authenticate its important to note that users with the roles of ACCOUNTADMIN, SECURITYADMIN, and ORGADMIN will receive an “invalid consent request error” message as snowflake blocks these roles by default. We suggest authenticating with a different user without these roles assigned.
+
