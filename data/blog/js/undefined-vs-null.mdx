@@ -1,0 +1,41 @@
+---
+title: undefined vs null in JavaScript
+date: '2025-01-01 10:50:00'
+tags: ['js']
+---
+
+## undefined
+
+`undefined` is a **primitive value** automatically assigned to variables that have just been declared, or to formal arguments for which there are no actual arguments.
+
+```js
+let x //create a variable but assign it no value
+```
+
+console.log(`x's value is ${x}`); //logs "x's value is undefined"
+
+## null
+
+In computer science, a `null` value represents a reference that points, generally intentionally, to a nonexistent or invalid **object** or address. The meaning of a null reference varies among language implementations.
+
+In JavaScript, `null` is marked as one of the primitive values, because its behavior is seemingly primitive. However, when using the typeof operator, it returns "object".
+
+```js
+console.log(typeof null) // "object"
+```
+
+This is considered a bug, but one which cannot be fixed because it will break too many scripts.
+
+## primitive value
+
+In JavaScript, a primitive (primitive value, primitive data type) is data that is not an object and has no methods or properties. There are 7 primitive data types:
+
+```js
+string
+number
+bigint
+boolean
+symbol
+undefined
+null
+```

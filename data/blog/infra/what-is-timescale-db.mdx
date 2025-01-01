@@ -1,0 +1,25 @@
+---
+title: What is Timescale DB
+date: '2024-12-27 09:06:02'
+tags: ['infra']
+draft: false
+---
+
+TimescaleDB is "PostgreSQL ++ for time series and events".
+
+It extends PostgreSQL as a plugin, so it fully supports SQL while adding features for optimized time-series workloads.
+
+It can be connected with params the same as PostgreSQL:
+
+```bash
+psql "postgres://tsdbadmin:<PASSWORD>@<HOST>:<PORT>/tsdb?sslmode=require"
+```
+
+# Key concepts
+
+## Hypertables
+
+- Hypertables are PostgreSQL tables that automatically partition data by time, improving insert and query performance.
+- They work like regular PostgreSQL tables but offer additional time-series management features.
+- TimescaleDB handles partitioning transparently, simplifying data interaction.
+![2](/static/images/infra/how-to-delete-a-sitemap-in-google-search-console/2.png)

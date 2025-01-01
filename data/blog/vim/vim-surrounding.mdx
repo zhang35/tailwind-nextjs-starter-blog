@@ -1,17 +1,13 @@
 ---
-title: Vim Advanced Operations
-date: '2024-09-26 00:00:00'
+title: Surround.vim
+date: '2025-01-01 10:00:00'
 tags: ['vim']
 ---
 
-# Edit a column
+Most useful ones:
 
-1. Stand on the beginning of the column
-2. Press `Ctrl+v`, then mark across the column you want to edit.
-3. Press `Shift+i` to insert text at the beginning of the column, `Shift+a` to append text, `r` to replace highlighted text, `d` to delete, `c` to change... etc.
-4. Hit `ESC` when done.
-
-# surround.vim
+- `cs"'` - Change surrounding double quotes to single quotes
+- `ysiw]` - Wrap the current word in square brackets
 
 ```
 It's easiest to explain with examples. Press cs"' inside

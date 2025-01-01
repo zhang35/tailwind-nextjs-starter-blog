@@ -5,7 +5,11 @@ tags: ['git']
 draft: false
 ---
 
+# Reset a commit
+
 `git reset HEAD~` - The last commit is gone, all its contents are kept, unstaged
+
+`git reset HEAD~2` - The last two commits are gone, all their contents are kept, unstaged
 
 `git reset --soft HEAD~` - The last commit is gone, all its contents are kept, staged
 
@@ -29,3 +33,7 @@ Reset one file to be sync with main:
 git checkout origin/main package.json
 
 ```
+
+# Reset a merge
+
+`git merge --abort` - If you have conflicts, you can abort the merge with this command.
