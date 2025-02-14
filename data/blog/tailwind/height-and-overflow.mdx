@@ -1,0 +1,42 @@
+---
+title: Placement case study - flex h-full and overflow
+date: '2025-02-14 14:44:00'
+tags: ['tailwind']
+---
+
+The html structure below has an issue: the blue box is taking the full height of the red container and the yellow box is overflowing from the red box.
+
+The first level 3 div (`h-full`) tries to inherit the height of its closest flex ancestor. Since level 2 doesn’t have an explicit height, `h-full` makes it expand to the full height of level 1 (the flex container).
+
+Because the first level 3 div already takes full height, the second one gets pushed beyond the level 2 div’s bounds, causing overflow.
+
+```html
+<!-- Level 1 -->
+<div class="flex h-full bg-red-100">
+  <!-- Level 2 -->
+  <div class="bg-green-100">
+    <!-- Level 3: Takes full height -->
+    <div class="h-full bg-blue-100">Content 1</div>
+
+    <!-- Level 3: Has margin but no height constraints -->
+    <div class=" bg-yellow-100">Content 2</div>
+  </div>
+</div>
+```
+
+How to Fix It? Use `flex flex-col`:
+
+```html
+<div class="flex h-full bg-red-100">
+  <div class="flex-col justify-between bg-green-100">
+    <div class="h-full bg-blue-100">Content 1</div>
+    <div class=" bg-yellow-100">Content 2</div>
+  </div>
+</div>
+```
+
+Key takeaways:
+
+- `h-full` inherits height but needs a defined parent height.
+- `flex flex-col` helps prevent children from taking all space. `flex-col` means the children will stack vertically(the final output looks like a column)
+- `overflow-auto` prevents content from overflowing outside the parent and adds scrollbars when needed.
