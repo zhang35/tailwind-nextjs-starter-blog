@@ -1,0 +1,44 @@
+---
+title: Git Stash
+date: '2025-02-15 08:36:02'
+tags: ['git']
+draft: false
+---
+
+## Stash
+
+Stash all changes:
+
+```bash
+git stash
+```
+
+Stash one file:
+
+```bash
+git stash push -m "Stash myfile" -- myfile.txt
+```
+
+The `--` separator is used when:
+
+1. Disambiguating between a file and a branch name (if a file has the same name as a branch).
+2. Ensuring arguments are interpreted as filenames rather than options.
+
+## List
+
+```bash
+git stash list
+```
+
+## Apply
+
+```bash
+git stash pop
+```
+
+or
+
+```bash
+git stash apply
+git stash apply stash@{1}
+```
