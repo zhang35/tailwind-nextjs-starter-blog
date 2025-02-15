@@ -40,3 +40,5 @@ Key takeaways:
 - `h-full` inherits height but needs a defined parent height.
 - `flex flex-col` helps prevent children from taking all space. `flex-col` means the children will stack vertically(the final output looks like a column)
 - `overflow-auto` prevents content from overflowing outside the parent and adds scrollbars when needed.
+- `h-full` on the parent only works if its own parent has a defined height. If none of its ancestors have a fixed height, h-full doesn’t mean anything -- it just grows.
+- If you don't want to use `h-full` all along from the root to the deepest child, you can just add a fixed height anywhere in the middle for one parent element: `class="h-[500px] overflow-y-auto"`.
