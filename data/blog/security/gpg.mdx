@@ -1,0 +1,84 @@
+---
+title: Use GPG on Mac
+date: '2025-02-21'
+tags: ['security']
+---
+
+# What is GPG?
+
+# What's the difference between GPG and OpenSSL?
+
+# How to use GPG on Mac
+
+https://www.gnupg.org/gph/en/manual/c14.html#AEN25
+
+## Install GPG
+
+```sh
+brew install gpg
+```
+
+## Generate a New Key
+
+```sh
+% gpg --gen-key
+```
+
+```sh
+% gpg --full-generate-key
+```
+
+1. Please select what kind of key you want: (1) RSA and RSA
+2. What keysize do you want? (3072) 4096
+3. Key is valid for? (0)
+4. Is this correct? (y/N) y
+5. GnuPG needs to construct a user ID to identify your key: Enter Real name, Email address, Comment
+6. Enter passphrase:
+   ![gpg passphrase](/static/images/security/gpg-passphrase.png)
+
+## Exchanging keys
+
+https://www.gnupg.org/gph/en/manual/x56.html
+
+```sh
+% gpg --list-keys
+```
+
+```sh
+[keyboxd]
+---------
+pub   rsa4096 2025-02-21 [SC]
+      29849C24680A97684180469D188DB3A7B6F89CC1
+uid           [ultimate] alice (alice-gpg) <alice@gmail.com>
+sub   rsa4096 2025-02-21 [E]
+```
+
+```sh
+gpg --output alice-public.pgp --armor --export alice
+```
+
+It looks like:
+
+```
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+mQIN...
+```
+
+Importing a public key:
+
+```
+gpg --import blake.gpg
+```
+
+Encrypting a document:
+
+```
+alice% gpg --output doc.gpg --encrypt --recipient blake@cyb.org doc
+```
+
+Decrypting a document:
+
+```
+blake% gpg --output doc --decrypt doc.gpg
+```
