@@ -1,0 +1,61 @@
+---
+title: watch vs watchEffect in Vue 3
+date: '2025-02-28'
+tags: ['vue']
+---
+
+Vue 3 introduces two new APIs for watching reactive data: `watch` and `watchEffect`. In this article, we will explore the differences between them and when to use each one.
+
+## watch
+
+`watch` is a more powerful and flexible API for watching reactive data. It allows you to watch multiple sources and react to changes in a more granular way.
+
+Here's an example of using `watch` to watch a single reactive property:
+
+```js
+import { ref, watch } from 'vue'
+
+const count = ref(0)
+
+watch(count, (newValue, oldValue) => {
+  console.log(`Count changed from ${oldValue} to ${newValue}`)
+})
+
+// Example: updating count
+count.value++ // Logs: Count changed from 0 to 1
+```
+
+You can also watch multiple sources:
+
+```js
+import { ref, watch } from 'vue'
+
+const firstName = ref('John')
+const lastName = ref('Doe')
+
+watch([firstName, lastName], ([newFirst, newLast], [oldFirst, oldLast]) => {
+  console.log(`Name changed from ${oldFirst} ${oldLast} to ${newFirst} ${newLast}`)
+})
+
+// Example: updating names
+firstName.value = 'Jane' // Logs: Name changed from John Doe to Jane Doe
+```
+
+## watchEffect
+
+`watchEffect` is a simpler API that automatically tracks reactive dependencies and re-runs the effect whenever they change. It is more declarative and concise than `watch`.
+
+```js
+import { ref, watchEffect } from 'vue'
+
+const count = ref(0)
+
+watchEffect(() => {
+  console.log(`Count is now: ${count.value}`)
+})
+
+// Example: updating count
+count.value++ // Logs: Count is now: 1
+```
+
+Unlike watch, watchEffect runs immediately when declared and automatically tracks all reactive dependencies inside its callback.
