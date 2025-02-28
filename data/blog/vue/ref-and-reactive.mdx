@@ -1,0 +1,21 @@
+---
+title: ref() vs reactive() in Vue 3
+date: '2025-02-28'
+tags: ['vue']
+---
+
+https://vuejs.org/guide/essentials/reactivity-fundamentals.html#reactive
+
+Unlike a `ref` which wraps the inner value in a special object, `reactive()` makes an **object** itself reactive.
+
+It only works for object types (objects, arrays, and collection types such as Map and Set).
+
+```js
+import { reactive } from 'vue'
+
+const state = reactive({ count: 0 })
+```
+
+```html
+<button @click="state.count++">{{ state.count }}</button>
+```
