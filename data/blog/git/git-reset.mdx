@@ -41,3 +41,13 @@ git checkout -- myfile.txt
 # Reset a merge
 
 `git merge --abort` - If you have conflicts, you can abort the merge with this command.
+
+# Undoing a git rebase
+
+```bash
+git reflog
+```
+
+```bash
+git reset --hard HEAD@{2}
+```
