@@ -1,0 +1,35 @@
+---
+title: Divide numbers in Go
+date: '2025-03-17'
+tags: ['golang']
+---
+
+`Int / Int = Int`
+
+```go
+fmt.Println(20 / 8) // 2
+```
+
+`Float / Float = Float`
+
+```go
+func main() {
+	fmt.Println(20.0 / 8) // 2.5
+	fmt.Println(20 / 8.0) // 2.5
+}
+```
+
+`int / float` or `float / int` is not allowed in Go. In the example above, when calculating `20.0 / 8`, `8` is treated as `float64`.
+
+When expecting floating results, ensure convert both variables to `float64` first.
+
+```go
+func main {
+	a := 20
+	b := 3
+	// Convert the variables to float64 first
+	fmt.Println(float64(a) / float64(b)) // 6.666666666666667
+	// Don't do this
+	fmt.Println(float64(a / b)) // 6
+}
+```
