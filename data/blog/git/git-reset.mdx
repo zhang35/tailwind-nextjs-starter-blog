@@ -30,12 +30,14 @@ Personally I only use hard and mixed (omitting the switch) and add the files mys
 Reset one file to be sync with main:
 
 ```
-git checkout origin/main package.json
+git checkout main -- package.json
 
 ```
 
+Or, if you want to reset a file to be sync with a remote branch:
+
 ```
-git checkout -- myfile.txt
+git checkout origin/main -- package.json
 ```
 
 # Reset a merge
