@@ -173,3 +173,36 @@ func TestUse(t *testing.T) {
 	testUser.Use(3, "hello")
 }
 ```
+
+# Questions
+
+1.  Does `EXPECT()` have to be followed immediately by the call?
+
+No, it doesn’t have to happen on the next line.
+
+You can write multiple EXPECT() setups first, then run your test logic later. For example:
+
+```go
+mock.EXPECT().DoSomething(1).Return(nil).Times(1)
+mock.EXPECT().DoSomething(2).Return(nil).Times(1)
+
+someFunctionThatCallsDoSomething() // might trigger DoSomething(1) and DoSomething(2)
+```
+
+As long as the actual calls to DoSomething happen somewhere before mockCtrl.Finish(), you’re good.
+
+2. What does `.Return(nil)` mean?
+
+```go
+mock.EXPECT().DoSomething().Return(nil)
+```
+
+This means when `DoSomething()` is called with the specified parameters, the mock will return `nil` — as if the real implementation returned `nil`.
+
+3. What does `.Times(1)` mean?
+
+```go
+mock.EXPECT().DoSomething().Return(nil).Times(1)
+```
+
+It means you expect this method to be called exactly once with the given arguments during the test.
