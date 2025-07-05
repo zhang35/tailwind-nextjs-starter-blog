@@ -1,0 +1,50 @@
+---
+title: LangChain vs. LangGraph
+date: '2025-07-05'
+tags: ['ai']
+draft: false
+---
+
+[Video: LangChain vs LangGraph: A Tale of Two Frameworks](https://www.youtube.com/watch?v=qAF1NjEVHhY)
+
+- LangChain   = What happens *inside* each node  (LLM prompt → output → tool call)
+- LangGraph   = How nodes pass messages & state  (graph scheduler + checkpoints)
+
+Both coexist: every LangGraph node is still a LangChain Runnable, so moving from linear chains to a stateful graph is mostly about adding the orchestration layer, not rewriting the business logic.
+
+## Typical Workflows
+
+### LangChain Workflow
+
+```mermaid
+graph TB
+    A[Input] --> B[Prompt Template]
+    B --> C[LLM]
+    C --> D[Output Parser]
+    D --> E[Final Output]
+    
+    style A fill:#e1f5fe
+    style E fill:#c8e6c9
+```
+
+### LangGraph Workflow
+
+```mermaid
+graph TB
+    A[Input State] --> B[Agent Node]
+    B --> C{Decision}
+    C -->|Tool Needed| D[Tool Node]
+    C -->|Continue| E[LLM Node]
+    D --> F[State Update]
+    E --> F
+    F --> G{More Steps?}
+    G -->|Yes| B
+    G -->|No| H[Final State]
+    
+    style A fill:#e1f5fe
+    style H fill:#c8e6c9
+    style C fill:#fff3e0
+    style G fill:#fff3e0
+```
+
+
