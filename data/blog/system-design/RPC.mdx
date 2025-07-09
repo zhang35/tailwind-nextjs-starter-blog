@@ -1,0 +1,52 @@
+---
+title: RPC(Remote Procedure Call) with Python example
+date: '2025-07-09'
+tags: ['system-design']
+draft: false
+---
+
+# RPC
+
+A Remote Procedure Call (RPC) allows a program to execute a procedure on another computer or server as if it were a local function call, abstracting away the complexities of network communication.
+
+```python
+from xmlrpc.server import SimpleXMLRPCServer
+
+def add(a, b):
+    return a + b
+
+def multiply(a, b):
+    return a * b
+
+server = SimpleXMLRPCServer(("localhost", 8000))
+print("Listening on port 8000...")
+server.register_function(add, "add")
+server.register_function(multiply, "multiply")
+server.serve_forever()
+
+```
+
+```python
+import xmlrpc.client
+
+with xmlrpc.client.ServerProxy("http://localhost:8000/") as proxy:
+    print("3 + 5 = %d" % proxy.add(3, 5))
+    print("3 * 5 = %d" % proxy.multiply(3, 5))
+
+```
+
+# gRPC
+
+RPC vs gRPC
+
+| Feature            | gRPC                                         | RPC (General)                                                      |
+|--------------------|----------------------------------------------|--------------------------------------------------------------------|
+| Data Serialization | Protocol Buffers (binary)                    | Various (JSON, XML, Protobuf)                                      |
+| Transport Protocol | HTTP/2 (primarily)                           | Varies (TCP, UDP, HTTP)                                            |
+| Performance        | Generally faster                             | Varies depending on implementation                                 |
+| Streaming          | Supports streaming                           | May or may not support streaming                                   |
+| Complexity         | Steeper learning curve                       | Varies, can be simpler                                             |
+| Language Support   | Good support for many languages              | Varies, depends on implementation                                  |
+| Microservices      | Well-suited for microservices                | Can be used for microservices, but may not be the best choice      |
+
+In essence: gRPC is a modern, high-performance RPC framework built for efficient communication, especially in distributed systems and microservices. While traditional RPC is a broader concept, it can be less performant than gRPC due to its reliance on potentially less efficient data formats and transport protocols. 
