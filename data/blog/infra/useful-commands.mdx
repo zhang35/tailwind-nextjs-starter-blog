@@ -20,13 +20,27 @@ Secret manager:
 
 ```bash
 # Get secret value
-aws secretsmanager get-secret-value --secret-id <secret-id> --region <region> --profile <profile-name>
+aws secretsmanager get-secret-value \
+--secret-id <secret-id> \
+--region <region> \
+--profile <profile-name>
 
 # Get secret value and parse it
-aws secretsmanager get-secret-value --secret-id <secret-id> --region <region> --query SecretString --output text --profile <profile-name>
+aws secretsmanager get-secret-value \
+--secret-id <secret-id> \
+--region <region> \
+--query SecretString \
+--output text \
+--profile <profile-name>
 
 # Get secret value and parse it with jq
-aws secretsmanager get-secret-value --secret-id <secret-id> --region <region> --query SecretString --output text --profile <profile-name> | jq -r '.password'
+aws secretsmanager get-secret-value \
+--secret-id <secret-id> \
+--region <region> \
+--query SecretString \
+--output text \
+--profile <profile-name> \
+| jq -r '.password'
 ```
 
 # Git
