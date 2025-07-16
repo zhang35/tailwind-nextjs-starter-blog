@@ -1,0 +1,48 @@
+---
+title: Useful commands
+date: '2025-07-16 10:06:02'
+tags: ['infra']
+draft: false
+---
+
+# Bash
+
+Show port usage and kill process:
+
+```bash
+sudo lsof -i :8080
+sudo kill -9 <PID>
+```
+
+# AWS
+
+Secret manager:
+
+```bash
+# Get secret value
+aws secretsmanager get-secret-value --secret-id <secret-id> --region <region> --profile <profile-name>
+
+# Get secret value and parse it
+aws secretsmanager get-secret-value --secret-id <secret-id> --region <region> --query SecretString --output text --profile <profile-name>
+
+# Get secret value and parse it with jq
+aws secretsmanager get-secret-value --secret-id <secret-id> --region <region> --query SecretString --output text --profile <profile-name> | jq -r '.password'
+```
+
+# Git
+
+Cherry pick to current branch:
+
+```bash
+# Cherry-pick without committing (stages changes only)
+git cherry-pick --no-commit <commit-hash>
+
+# Cherry-pick and continue if there are conflicts
+git cherry-pick --continue
+
+# Abort cherry-pick if there are conflicts
+git cherry-pick --abort
+
+# Skip current commit in cherry-pick sequence
+git cherry-pick --skip
+```
