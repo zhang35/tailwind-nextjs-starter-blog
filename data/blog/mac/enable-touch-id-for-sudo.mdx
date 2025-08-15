@@ -1,0 +1,10 @@
+---
+title: Enable Touch ID for sudo
+date: '2025-08-15'
+tags: ['mac']
+draft: false
+---
+
+```bash
+sed "s/^#auth/auth/" /etc/pam.d/sudo_local.template | sudo tee /etc/pam.d/sudo_local
+```
