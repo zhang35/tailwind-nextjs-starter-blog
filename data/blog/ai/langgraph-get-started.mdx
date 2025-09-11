@@ -1,0 +1,44 @@
+---
+title: LangGraph Get Started
+date: '2025-08-10'
+tags: ['ai', 'langgraph']
+draft: false
+---
+
+https://langchain-ai.github.io/langgraph/concepts/low_level/
+
+LangGraph models agent workflows as graphs:
+
+- State: A shared data structure that represents the current snapshot of your application. It can be any Python type, but is typically a TypedDict or Pydantic BaseModel.
+
+- Nodes: Python functions that encode the logic of your agents. They receive the current State as input, perform some computation or side-effect, and return an updated State. **Whatever a node returns is used to update the graph's central state.**
+
+- Edges: Python functions that determine which Node to execute next based on the current State. They can be conditional branches or fixed transitions.
+
+In short: nodes do the work, edges tell what to do next.
+
+Input format¶
+Agent input must be a dictionary with a messages key. Supported formats are:
+
+Format Example
+String {"messages": "Hello"} — Interpreted as a HumanMessage
+Message dictionary {"messages": {"role": "user", "content": "Hello"}}
+List of messages {"messages": [{"role": "user", "content": "Hello"}]}
+With custom state {"messages": [{"role": "user", "content": "Hello"}], "user_name": "Alice"} — If using a custom state_schema
+Messages are automatically converted into LangChain's internal message format. You can read more about LangChain messages in the LangChain documentation.
+
+Using custom agent state
+
+You can provide additional fields defined in your agent's state schema directly in the input dictionary. This allows dynamic behavior based on runtime data or prior tool outputs. See the context guide for full details.
+
+Note
+
+A string input for messages is converted to a HumanMessage. This behavior differs from the prompt parameter in create_react_agent, which is interpreted as a SystemMessage when passed as a string.
+
+Output format¶
+Agent output is a dictionary containing:
+
+messages: A list of all messages exchanged during execution (user input, assistant replies, tool invocations).
+Optionally, structured_response if structured output is configured.
+If using a custom state_schema, additional keys corresponding to your defined fields may also be present in the output. These can hold updated state values from tool execution or prompt logic.
+See the context guide for more details on working with custom state schemas and accessing context.

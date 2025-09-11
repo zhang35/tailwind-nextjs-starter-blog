@@ -1,0 +1,50 @@
+---
+title: LangGraph vs ReAct Agent
+date: '2025-08-10'
+tags: ['ai', 'langgraph', 'react-agent']
+draft: false
+---
+
+For a ReAct agent, the best practice is to centralize the core reasoning prompt in the main agent.
+
+- The Agent's Role (The "Brain"): The createReactAgent model is designed around a single, central "brain." This brain's job is to manage the entire conversation, maintain
+  context, and decide which tool to use next. Its prompt is the constitution for the entire operation.
+- The Tool's Role (The "Hands"): Tools should be as "dumb" and deterministic as possible. They are the hands that execute specific, well-defined tasks.
+- The Problem with Prompts in Tools (in this model): When you embed a powerful LLM prompt inside a tool, you are essentially creating a "secret brain" that the main agent
+  knows nothing about. The main agent decides to call generateSql, but it has no visibility into how that tool reasons. If the tool's internal prompt fails, the main
+  agent is helpless. It can't correct the tool's reasoning because it can't see it. It just knows the tool failed. This makes the system brittle.
+
+---
+
+In a LangGraph, it is not only acceptable but often _preferable_ to have nodes that contain their own LLM prompts.
+
+1.  The Graph is the Orchestrator: In a custom LangGraph, the high-level reasoning is no longer in a single prompt. The reasoning is encoded in the graph's structure
+    itself—the nodes and the edges that connect them. The graph is the explicit workflow. You are replacing the implicit reasoning of a single ReAct prompt with the
+    explicit logic of a state machine.
+
+2.  Nodes as Specialized Agents: Because the graph handles the high-level orchestration, each node can be thought of as a highly specialized, single-purpose agent.
+
+    - The generate_sql node's only job is to convert a natural language query and a schema into a SQL query. It's perfectly acceptable for it to use a dedicated,
+      fine-tuned LLM prompt to do this one job well.
+    - The process_results node can have its own LLM prompt to translate a raw CSV path or an error message into a friendly, conversational response.
+
+3.  Control and Observability: The key difference is control. If the generate_sql node fails, the graph's structure (via conditional edges) knows exactly what happened and
+    can decide what to do next:
+    - Route to an error-handling node.
+    - Route back to the generate_sql node with instructions to try again.
+    - Ask the user for more information.
+
+The main orchestrator (the graph) never loses control, even if a node's internal LLM call fails.
+
+Choose `createReactAgent` for:
+
+- Rapid Prototyping: When you need to get a simple demo working quickly.
+- Simple Conversational Bots: For agents that don't follow a rigid, multi-step process and are more about general conversation.
+- Low-Stakes Tasks: Where occasional failures or incorrect behavior are acceptable.
+
+Choose a Custom `LangGraph` for:
+
+- Production-Grade Systems: When reliability and predictability are critical.
+- Task-Oriented Agents: For any agent that must follow a specific, repeatable workflow to accomplish a task (like the query-db-agent).
+- Complex Error Handling: When you need to build intelligent recovery and self-correction loops.
+- Cost Optimization: When you need to control context size at each step to manage API costs effectively.
