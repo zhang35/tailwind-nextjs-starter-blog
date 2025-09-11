@@ -1,0 +1,26 @@
+---
+title: Git fetch
+date: '2025-09-12 10:06:02'
+tags: ['git']
+draft: false
+---
+
+## Rebase local branch to remote main without switching branch
+
+1. Fetch from origin and update the local main branch:
+
+```bash
+git fetch origin main:main
+```
+
+Without updating the local main branch:
+
+```bash
+git fetch origin main
+```
+
+2. Rebase the local main branch to the remote main branch:
+
+```bash
+git rebase main
+```
