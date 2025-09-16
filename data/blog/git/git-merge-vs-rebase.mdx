@@ -1,0 +1,77 @@
+---
+title: Git Merge vs. Rebase
+date: '2025-09-16 11:00:00'
+tags: ['git']
+draft: false
+---
+
+Both `git merge` and `git rebase` solve the same problem: integrating changes from one branch into another. However, they do so in distinct ways, and choosing the right one depends on your team's workflow and goals for the project history.
+
+## Git Merge
+
+`git merge` is a **non-destructive** operation. It takes the commits from your feature branch and the commits from the target branch (e.g., `main`) and combines them.
+
+When you merge a feature branch into `main`, it creates a new **merge commit** in the `main` branch. This commit has two parents: one from the `main` branch and one from the feature branch, creating a diamond shape in your commit history.
+
+```
+      A---B---C feature
+     /         \
+D---E---F---G---H main
+```
+*In this diagram, `H` is the merge commit.*
+
+### When to use `git merge`:
+
+1.  **Merging into Public Branches**: Always use `merge` when integrating a completed feature branch into a shared public branch like `main` or `develop`. This preserves the context of the branch and keeps the history of what actually happened.
+2.  **Preserving History**: If you want a precise and explicit history of when features were branched and merged, `merge` is the right tool. It shows the parallel development of different features.
+3.  **Team Collaboration**: It's generally safer for teams, especially those with members new to Git, as it doesn't rewrite commit history.
+
+**Pros:**
+- Simple and straightforward.
+- Preserves the original commit history as it happened.
+- Avoids rewriting commits that may be shared with others.
+
+**Cons:**
+- Can create a cluttered, non-linear history that is hard to read.
+- The log can be polluted with many "Merge branch 'feature-x'" commits.
+
+## Git Rebase
+
+`git rebase` moves the entire feature branch to begin on the tip of the target branch (e.g., `main`). It **rewrites project history** by creating new commits for each commit in the original branch.
+
+This results in a perfectly **linear history**, making it look as though the feature was developed sequentially after the latest changes on `main`.
+
+```
+                  A'--B'--C' feature
+                 /
+D---E---F---G---H main
+```
+*Here, A', B', and C' are new commits that mirror the changes of A, B, and C.*
+
+### When to use `git rebase`:
+
+1.  **Updating a Private Feature Branch**: Use `rebase` to incorporate the latest changes from `main` into your *local*, un-pushed feature branch. This keeps your branch up-to-date and helps avoid complex merge conflicts later.
+2.  **Cleaning Up History**: Before creating a pull request, you can use interactive rebase (`git rebase -i`) to clean up your local commits—squashing, editing, or reordering them to create a clean and logical sequence.
+
+**The Golden Rule of Rebasing:**
+> **Never rebase a branch that has been pushed and is being used by others.**
+
+Rebasing creates new commits and abandons the old ones. If other developers have based their work on your original commits, they will have a diverged history, leading to significant confusion and repository cleanup headaches.
+
+**Pros:**
+- Creates a clean, linear, and easy-to-read commit history.
+- Eliminates unnecessary merge commits.
+
+**Cons:**
+- Rewrites history, which is dangerous on shared branches.
+- Can be more complex to resolve conflicts, as you may have to resolve them on each replayed commit.
+- Loses the context of when the feature branch was originally created.
+
+## Summary: Which One Should You Use?
+
+A common and effective workflow is to use **rebase for cleanup and updating, and merge for integration**:
+
+-   **While developing on your local feature branch:** Use `git rebase main` to pull in the latest updates from the `main` branch. This keeps your feature branch current and your history linear.
+-   **When your feature is complete:** Merge your feature branch into `main` using a standard `git merge` (often done via a pull request). This creates a single merge commit, preserving the history of the feature as a single unit of work.
+
+This hybrid approach gives you the best of both worlds: a clean, linear history within your feature branches and a reliable, non-destructive merge process for integrating them into the main codebase.

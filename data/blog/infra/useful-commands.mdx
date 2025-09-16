@@ -18,7 +18,7 @@ sudo kill -9 <PID>
 
 Secret manager:
 
-```bash
+````bash
 # Get secret value
 aws secretsmanager get-secret-value \
 --secret-id <secret-id> \
@@ -41,6 +41,25 @@ aws secretsmanager get-secret-value \
 --output text \
 --profile <profile-name> \
 | jq -r '.password'
+
+# Create a new secret
+
+```bash
+aws secretsmanager create-secret \
+--name <secret-name> \
+--secret-string <secret-string> \
+--profile <profile-name>
+````
+
+# API Gateway
+
+Filter the request to a path: `/my/path` in CloudWatch Logs Insights
+
+```bash
+fields @timestamp, @message, @logStream
+| filter @message like "/my/path"
+| sort @timestamp desc
+| limit 100
 ```
 
 # Git
@@ -59,4 +78,31 @@ git cherry-pick --abort
 
 # Skip current commit in cherry-pick sequence
 git cherry-pick --skip
+```
+
+# Kubernetes
+
+```
+ Bash(kubectl -n marketplace exec deployment/my-service -- wget -O- http://localhost:3001/ 2>&1 | head -20)
+  ⎿  Connecting to localhost:3001 ([::1]:3001)
+     Hello World!writing to stdout
+```
+
+## Context
+
+```bash
+# Get current context
+kubectl config current-context
+
+# List all contexts
+kubectl config get-contexts
+
+# Set context
+kubectl config use-context <context-name>
+
+# View context details
+kubectl config view --minify
+
+# Set namespace for current context
+kubectl config set-context --current --namespace=<namespace>
 ```

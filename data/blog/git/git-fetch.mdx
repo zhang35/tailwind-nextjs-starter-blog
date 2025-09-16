@@ -1,26 +1,79 @@
 ---
-title: Git fetch
+title: How to Sync a Branch with Remote Main
 date: '2025-09-12 10:06:02'
 tags: ['git']
 draft: false
 ---
 
-## Rebase local branch to remote main without switching branch
+When working on a feature branch, you frequently need to update it with the latest changes from the `main` branch. This keeps your branch current and helps prevent large merge conflicts later.
 
-1. Fetch from origin and update the local main branch:
+There are two primary ways to integrate these changes: **rebasing** and **merging**. This guide shows you how to perform both workflows without having to check out your local `main` branch first.
 
-```bash
-git fetch origin main:main
-```
+## Option 1: Updating with `git rebase` (Linear History)
 
-Without updating the local main branch:
+Rebasing rewrites your branch's history by replaying your commits on top of the latest commit from `main`. This results in a clean, linear history.
+
+### Method 1: The `fetch` and `rebase` Workflow
+
+This is a two-step approach that clearly separates downloading changes from applying them.
+
+**Step 1: Fetch the latest from the remote `main` branch**
+This command downloads changes from `origin` and updates your local remote-tracking branch, `origin/main`. It does not touch your local `main` branch or your current working branch.
 
 ```bash
 git fetch origin main
 ```
 
-2. Rebase the local main branch to the remote main branch:
+**Step 2: Rebase your current branch onto `origin/main`**
+Now that `origin/main` is up-to-date, you can rebase your current branch on top of it.
 
 ```bash
-git rebase main
+git rebase origin/main
 ```
+
+### Method 2: The `pull --rebase` Shortcut
+
+This single command achieves the same result by combining the fetch and rebase steps.
+
+```bash
+git pull --rebase origin main
+```
+
+## Option 2: Updating with `git merge` (Preserves History)
+
+Merging integrates the latest changes from `main` by creating a new "merge commit" in your feature branch. This preserves the exact history of when the two branches were combined.
+
+### Method 1: The `fetch` and `merge` Workflow
+
+Similar to rebasing, you can first fetch the changes and then merge them.
+
+**Step 1: Fetch the latest from the remote `main` branch**
+This is the same command as before, updating your `origin/main` remote-tracking branch.
+
+```bash
+git fetch origin main
+```
+
+**Step 2: Merge the changes into your current branch**
+Instead of rebasing, you merge the updated `origin/main` into your branch.
+
+```bash
+git merge origin/main
+```
+This creates a merge commit in your feature branch's history.
+
+### Method 2: The `git pull` Shortcut
+
+By default, `git pull` is a shortcut for `git fetch` followed by `git merge`.
+
+```bash
+git pull origin main
+```
+This command fetches from `origin main` and merges the result into your current branch.
+
+## Which Should You Use?
+
+- **Rebase** if you prefer a clean, linear commit history without extra merge commits.
+- **Merge** if you want to preserve the exact history and explicitly show when your branch synced with `main`.
+
+For a detailed comparison, see our post on [Git Merge vs. Rebase](./git-merge-vs-rebase).
