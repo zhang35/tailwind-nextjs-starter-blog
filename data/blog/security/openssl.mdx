@@ -1,0 +1,33 @@
+---
+title: Use GPG on Mac
+date: '2025-02-21'
+tags: ['security']
+---
+
+To generate an unencrypted version, use the following command:
+
+```bash
+openssl genrsa 2048 | openssl pkcs8 -topk8 -inform PEM -out rsa_key.p8 -nocrypt
+```
+
+The commands generate a private key in PEM format.
+
+```
+-----BEGIN PRIVATE KEY-----
+MIIE6T...
+-----END PRIVATE KEY-----
+```
+
+To generate an encrypted version, use the following command, which omits -nocrypt:
+
+```bash
+openssl genrsa 2048 | openssl pkcs8 -topk8 -v2 des3 -inform PEM -out rsa_key.p8
+```
+
+The commands generate a private key in PEM format.
+
+```
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIIE6T...
+-----END ENCRYPTED PRIVATE KEY-----
+```

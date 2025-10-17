@@ -1,0 +1,84 @@
+---
+title: Get started with Nix on Mac
+date: '2025-04-13'
+tags: ['nix']
+---
+
+# Installation
+
+https://determinate.systems/
+
+```sh
+mkdir -p ~/.config/nix
+cd ~/.config/nix
+nix flake init -t nix-darwin/nix-darwin-24.11
+
+sed -i '' "s/example/$(scutil --get LocalHostName)/" flake.nix
+```
+
+# Config
+
+Example:
+
+```sh
+environment.systemPackages = with pkgs; [
+            git
+            vim
+          ];
+
+programs.zsh.enable = true;
+programs.direnv = {
+    silent = false;
+    loadInNixShell = true;
+    nix-direnv = {
+      enable = true;
+    };
+  };
+```
+
+Formatting:
+
+```sh
+nixpkgs-fmt
+```
+
+Update config:
+
+```sh
+nix run nix-darwin --extra-experimental-features nix-command --extra-experimental-features flakes -- switch --flake ~/.config/nix
+```
+
+environment.shellAliases = {
+update = "nix run nix-darwin --extra-experimental-features nix-command --extra-experimental-features flakes -- switch --flake ~/.config/nix";
+};
+
+eval "$(direnv hook zsh)"
+
+## Git config
+
+## Touch ID in sudo
+
+security.pam.enableSudoTouchIdAuth = true
+security.pam.services.sudo_local.touchIdAuth
+
+# Links
+
+https://ohmyz.sh/
+
+https://alacritty.org/
+
+https://github.com/direnv/direnv-vscode
+
+https://marketplace.visualstudio.com/items?itemName=mkhl.direnv
+
+https://github.com/nix-community/lorri
+
+https://github.com/homebrew/install#uninstall-homebrew
+
+https://github.com/ohmyzsh/ohmyzsh/wiki/Plugins
+
+https://github.com/nix-community/home-manager
+
+https://nix-community.github.io/home-manager/
+
+https://github.com/NixOS/nixpkgs

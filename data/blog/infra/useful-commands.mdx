@@ -44,12 +44,17 @@ aws secretsmanager get-secret-value \
 
 # Create a new secret
 
-```bash
 aws secretsmanager create-secret \
 --name <secret-name> \
 --secret-string <secret-string> \
 --profile <profile-name>
-````
+
+# Update a secret
+aws secretsmanager put-secret-value \
+ --secret-id <secret-id> \
+ --secret-string <secret-string> \
+ --profile <profile-name>
+```
 
 # API Gateway
 
@@ -106,3 +111,4 @@ kubectl config view --minify
 # Set namespace for current context
 kubectl config set-context --current --namespace=<namespace>
 ```
+````

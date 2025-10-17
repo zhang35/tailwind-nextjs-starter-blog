@@ -1,0 +1,55 @@
+---
+title: Python versions on Mac
+date: '2025-07-27 07:30:00'
+tags: ['python']
+draft: false
+---
+
+pyenv + uv is a good way to manage Python versions on Mac.
+
+# Install pyenv
+
+```bash
+brew install pyenv
+```
+
+# Install uv
+
+```bash
+brew install uv
+```
+
+# Install desired Python version (via pyenv)
+
+```bash
+pyenv install 3.13.5
+```
+
+# Set local Python version for the project
+
+```bash
+mkdir myproject
+cd myproject
+pyenv local 3.13.5  # creates a `.python-version` file
+```
+
+# Create a virtual environment (via uv)
+
+```bash
+uv venv
+```
+
+# Activate the environment
+
+```bash
+source .venv/bin/activate
+```
+
+# Initialize pyproject.toml and install packages
+
+```bash
+uv init  # creates pyproject.toml
+
+uv pip install requests fastapi
+uv pip compile  # creates uv.lock
+```
