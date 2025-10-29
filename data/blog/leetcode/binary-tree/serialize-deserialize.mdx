@@ -1,0 +1,160 @@
+---
+title: leetcode-297 Serialize and Deserialize Binary Tree
+date: '2025-10-28'
+tags: ['leetcode', 'binary-tree', 'bfs', 'dfs', 'design', 'airbnb']
+---
+
+[[297] Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/)
+
+**Key Concept: DFS with Null Markers** - Serialize using preorder traversal with null markers. Deserialize by reconstructing tree using the same traversal order. Can also use BFS level-order traversal.
+
+**Pattern:** Tree serialization for storage/transmission.
+
+```python
+# Serialization is converting a data structure to a string so it can be stored
+# or transmitted and reconstructed later. Design an algorithm to serialize and
+# deserialize a binary tree.
+#
+# Example:
+# Input: root = [1,2,3,null,null,4,5]
+# Output: [1,2,3,null,null,4,5]
+#
+# Constraints:
+# - Number of nodes in range [0, 10^4]
+# - -1000 <= Node.val <= 1000
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Codec:
+    # Approach 1: DFS Preorder Traversal
+    def serialize(self, root: TreeNode) -> str:
+        """Encodes a tree to a single string."""
+        def dfs(node):
+            if not node:
+                values.append('null')
+                return
+            values.append(str(node.val))
+            dfs(node.left)
+            dfs(node.right)
+
+        values = []
+        dfs(root)
+        return ','.join(values)
+
+    def deserialize(self, data: str) -> TreeNode:
+        """Decodes your encoded data to tree."""
+        def dfs():
+            val = next(values)
+            if val == 'null':
+                return None
+            node = TreeNode(int(val))
+            node.left = dfs()
+            node.right = dfs()
+            return node
+
+        values = iter(data.split(','))
+        return dfs()
+
+
+# Approach 2: BFS Level-Order Traversal
+class Codec2:
+    def serialize(self, root: TreeNode) -> str:
+        if not root:
+            return ''
+
+        from collections import deque
+        queue = deque([root])
+        result = []
+
+        while queue:
+            node = queue.popleft()
+            if node:
+                result.append(str(node.val))
+                queue.append(node.left)
+                queue.append(node.right)
+            else:
+                result.append('null')
+
+        return ','.join(result)
+
+    def deserialize(self, data: str) -> TreeNode:
+        if not data:
+            return None
+
+        from collections import deque
+        values = data.split(',')
+        root = TreeNode(int(values[0]))
+        queue = deque([root])
+        i = 1
+
+        while queue:
+            node = queue.popleft()
+
+            # Process left child
+            if values[i] != 'null':
+                node.left = TreeNode(int(values[i]))
+                queue.append(node.left)
+            i += 1
+
+            # Process right child
+            if values[i] != 'null':
+                node.right = TreeNode(int(values[i]))
+                queue.append(node.right)
+            i += 1
+
+        return root
+
+
+# Approach 3: More compact using list
+class Codec3:
+    def serialize(self, root):
+        def preorder(node):
+            if not node:
+                return ['#']
+            return [str(node.val)] + preorder(node.left) + preorder(node.right)
+
+        return ' '.join(preorder(root))
+
+    def deserialize(self, data):
+        def build(vals):
+            val = next(vals)
+            if val == '#':
+                return None
+            node = TreeNode(int(val))
+            node.left = build(vals)
+            node.right = build(vals)
+            return node
+
+        return build(iter(data.split()))
+
+# Time Complexity: O(n) for both operations
+# Space Complexity: O(n) for the serialized string and recursion
+#
+# DFS vs BFS:
+# DFS Preorder:
+# - Pros: Natural recursion, compact code
+# - Cons: Deep trees may hit recursion limit
+# - Format: "1,2,null,null,3,4,null,null,5,null,null"
+#
+# BFS Level-order:
+# - Pros: Iterative, no recursion limit
+# - Cons: Slightly more code
+# - Format: "1,2,3,null,null,4,5"
+#
+# Key Points:
+# 1. Must mark null nodes to preserve structure
+# 2. Serialize and deserialize must use same traversal order
+# 3. For preorder: root, left, right
+# 4. For level-order: use queue, process level by level
+#
+# Alternative formats:
+# - JSON: {"val": 1, "left": {...}, "right": {...}}
+# - Parentheses: (1(2)(3(4)(5)))
+#
+# AirBnB: Tests tree traversal and string manipulation
+# Real-world: Saving/loading tree structures, network transmission

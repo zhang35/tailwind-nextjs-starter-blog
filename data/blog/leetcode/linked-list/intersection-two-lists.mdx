@@ -1,0 +1,121 @@
+---
+title: leetcode-160 Intersection of Two Linked Lists
+date: '2025-10-28'
+tags: ['leetcode', 'linked-list', 'two-pointer', 'airbnb']
+---
+
+[[160] Intersection of Two Linked Lists](https://leetcode.com/problems/intersection-of-two-linked-lists/)
+
+**Key Concept: Two Pointers with Path Switching** - Use two pointers starting at both heads. When a pointer reaches end, redirect it to the other list's head. They'll meet at intersection or both reach null simultaneously.
+
+**Pattern:** Elegant two-pointer solution for linked list intersection.
+
+```python
+# Given the heads of two singly linked-lists headA and headB, return the node
+# at which the two lists intersect. If the two lists have no intersection, return null.
+#
+# Example 1:
+# Input: intersectVal = 8, listA = [4,1,8,4,5], listB = [5,6,1,8,4,5], skipA = 2, skipB = 3
+# Output: Node with value 8
+#
+# Constraints:
+# - The number of nodes in listA is m.
+# - The number of nodes in listB is n.
+# - 1 <= m, n <= 3 * 10^4
+# - Follow up: Could you write a solution that runs in O(m + n) time and uses O(1) space?
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    # Approach 1: Two Pointers with Path Switching (Optimal)
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        if not headA or not headB:
+            return None
+
+        pA, pB = headA, headB
+
+        # Traverse both lists
+        # When reaching end, switch to other list's head
+        while pA != pB:
+            pA = pA.next if pA else headB
+            pB = pB.next if pB else headA
+
+        # Either both null (no intersection) or meeting point
+        return pA
+
+    # Approach 2: Hash Set
+    def getIntersectionNode2(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        seen = set()
+
+        # Add all nodes from listA to set
+        current = headA
+        while current:
+            seen.add(current)
+            current = current.next
+
+        # Check listB for first node in set
+        current = headB
+        while current:
+            if current in seen:
+                return current
+            current = current.next
+
+        return None
+
+    # Approach 3: Calculate Length Difference
+    def getIntersectionNode3(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        def get_length(head):
+            length = 0
+            while head:
+                length += 1
+                head = head.next
+            return length
+
+        lenA = get_length(headA)
+        lenB = get_length(headB)
+
+        # Align starting points
+        while lenA > lenB:
+            headA = headA.next
+            lenA -= 1
+        while lenB > lenA:
+            headB = headB.next
+            lenB -= 1
+
+        # Move together until intersection
+        while headA != headB:
+            headA = headA.next
+            headB = headB.next
+
+        return headA
+
+# Two Pointers: Time O(m + n), Space O(1) ✓ Optimal
+# Hash Set: Time O(m + n), Space O(m)
+# Length Diff: Time O(m + n), Space O(1)
+#
+# Why Two Pointers Works (Key Insight):
+# Let's say:
+# - List A: a nodes before intersection + c nodes in intersection
+# - List B: b nodes before intersection + c nodes in intersection
+#
+# Pointer A path: a + c + b
+# Pointer B path: b + c + a
+# Both paths have same length: a + c + b = b + c + a
+#
+# Visualization:
+# A: 4 -> 1 -> 8 -> 4 -> 5
+# B: 5 -> 6 -> 1 -> 8 -> 4 -> 5
+#                   ↑
+#             intersection
+#
+# pA: 4->1->8->4->5->null->5->6->1->8 (meets here)
+# pB: 5->6->1->8->4->5->null->4->1->8 (meets here)
+#
+# If no intersection:
+# Both pointers will be null at the same time
+#
+# AirBnB: Tests pointer manipulation and mathematical reasoning

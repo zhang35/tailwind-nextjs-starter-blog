@@ -1,0 +1,47 @@
+---
+title: leetcode-787 Cheapest Flights Within K Stops
+date: '2025-10-28'
+tags: ['leetcode', 'graph', 'dijkstra', 'bfs', 'dp', 'airbnb']
+---
+
+[[787] Cheapest Flights Within K Stops](https://leetcode.com/problems/cheapest-flights-within-k-stops/)
+
+**Key Concept: Modified Dijkstra or BFS with K Constraint** - Track both cost and number of stops. Use modified Dijkstra that considers the stop constraint.
+
+```python
+# Find cheapest price from src to dst with at most k stops.
+
+class Solution:
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+        from collections import defaultdict
+        import heapq
+
+        graph = defaultdict(list)
+        for u, v, price in flights:
+            graph[u].append((v, price))
+
+        # (cost, node, stops)
+        heap = [(0, src, 0)]
+        visited = {}
+
+        while heap:
+            cost, node, stops = heapq.heappop(heap)
+
+            if node == dst:
+                return cost
+
+            if stops > k:
+                continue
+
+            if node in visited and visited[node] <= stops:
+                continue
+            visited[node] = stops
+
+            for neighbor, price in graph[node]:
+                heapq.heappush(heap, (cost + price, neighbor, stops + 1))
+
+        return -1
+
+# Time: O(E + N log N), Space: O(N)
+# AirBnB: Tests modified shortest path algorithms
+```

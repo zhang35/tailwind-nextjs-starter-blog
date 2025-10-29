@@ -1,0 +1,146 @@
+---
+title: leetcode-146 LRU Cache
+date: '2025-10-28'
+tags: ['leetcode', 'design', 'hash-table', 'linked-list', 'airbnb']
+---
+
+[[146] LRU Cache](https://leetcode.com/problems/lru-cache/)
+
+**Key Concept: Hash Map + Doubly Linked List** - Combine hash map (for O(1) access) with doubly linked list (for O(1) insertion/deletion). Most recently used at head, least recently used at tail.
+
+**Pattern:** Classic system design problem for implementing cache with eviction policy.
+
+```python
+# Design a data structure that follows the constraints of a Least Recently Used (LRU) cache.
+#
+# Implement the LRUCache class:
+# - LRUCache(int capacity) Initialize the LRU cache with positive size capacity.
+# - int get(int key) Return the value if key exists, otherwise return -1.
+# - void put(int key, int value) Update the value if key exists. Otherwise, add
+#   the key-value pair. If the number of keys exceeds capacity, evict the LRU key.
+#
+# The functions get and put must each run in O(1) average time complexity.
+#
+# Example:
+# Input: ["LRUCache", "put", "put", "get", "put", "get", "put", "get", "get", "get"]
+#        [[2], [1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]
+# Output: [null, null, null, 1, null, -1, null, -1, 3, 4]
+#
+# Constraints:
+# 1 <= capacity <= 3000
+# 0 <= key <= 10^4
+# 0 <= value <= 10^5
+# At most 2 * 10^5 calls will be made to get and put.
+
+class DLLNode:
+    """Doubly Linked List Node"""
+    def __init__(self, key=0, value=0):
+        self.key = key
+        self.value = value
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = {}  # key -> DLLNode
+
+        # Dummy head and tail for easier manipulation
+        self.head = DLLNode()
+        self.tail = DLLNode()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node: DLLNode) -> None:
+        """Remove node from linked list"""
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _add_to_head(self, node: DLLNode) -> None:
+        """Add node right after head (most recently used)"""
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def _move_to_head(self, node: DLLNode) -> None:
+        """Move existing node to head"""
+        self._remove(node)
+        self._add_to_head(node)
+
+    def _remove_tail(self) -> DLLNode:
+        """Remove and return node before tail (LRU)"""
+        node = self.tail.prev
+        self._remove(node)
+        return node
+
+    def get(self, key: int) -> int:
+        if key not in self.cache:
+            return -1
+
+        node = self.cache[key]
+        self._move_to_head(node)  # Mark as recently used
+        return node.value
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            # Update existing key
+            node = self.cache[key]
+            node.value = value
+            self._move_to_head(node)
+        else:
+            # Add new key
+            node = DLLNode(key, value)
+            self.cache[key] = node
+            self._add_to_head(node)
+
+            if len(self.cache) > self.capacity:
+                # Evict LRU
+                lru = self._remove_tail()
+                del self.cache[lru.key]
+
+
+# Using OrderedDict (Python 3.7+)
+from collections import OrderedDict
+
+class LRUCache2:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache = OrderedDict()
+
+    def get(self, key: int) -> int:
+        if key not in self.cache:
+            return -1
+        # Move to end (most recently used)
+        self.cache.move_to_end(key)
+        return self.cache[key]
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            # Move to end
+            self.cache.move_to_end(key)
+        self.cache[key] = value
+
+        if len(self.cache) > self.capacity:
+            # Remove first item (LRU)
+            self.cache.popitem(last=False)
+
+# Both approaches: Time O(1) for get and put, Space O(capacity)
+#
+# Data Structure Choice:
+# - Hash Map: O(1) access to any key
+# - Doubly Linked List: O(1) removal and insertion
+# - Head: Most recently used
+# - Tail: Least recently used
+#
+# Operations:
+# - get(): Move accessed node to head
+# - put(): Add/update node at head, evict from tail if needed
+#
+# Why Doubly Linked List?
+# - Need to remove from middle (requires prev pointer)
+# - Need to add to front (requires next pointer)
+# - Singly linked wouldn't work efficiently
+#
+# AirBnB: Extremely common, tests system design knowledge
+# Follow-up questions: Thread safety, TTL, cache invalidation

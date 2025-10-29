@@ -1,0 +1,93 @@
+---
+title: leetcode-20 Valid Parentheses
+date: '2025-10-28'
+tags: ['leetcode', 'stack', 'string']
+---
+
+[[20] Valid Parentheses](https://leetcode.com/problems/valid-parentheses/)
+
+**Key Concept: Stack for Matching Pairs** - Use a stack to match opening and closing brackets. Push opening brackets onto stack, pop when encountering closing bracket and verify it matches.
+
+**Pattern:** Stack is the go-to data structure for matching/balancing problems.
+
+```python
+# Given a string s containing just the characters '(', ')', '{', '}', '[' and ']',
+# determine if the input string is valid.
+# An input string is valid if:
+# 1. Open brackets must be closed by the same type of brackets.
+# 2. Open brackets must be closed in the correct order.
+# 3. Every close bracket has a corresponding open bracket of the same type.
+#
+# Example 1:
+# Input: s = "()"
+# Output: true
+#
+# Example 2:
+# Input: s = "()[]{}"
+# Output: true
+#
+# Example 3:
+# Input: s = "(]"
+# Output: false
+#
+# Constraints:
+# 1 <= s.length <= 10^4
+# s consists of parentheses only '()[]{}'.
+
+class Solution:
+    def isValid(self, s: str) -> bool:
+        stack = []
+        # Map closing bracket to opening bracket
+        mapping = {')': '(', '}': '{', ']': '['}
+
+        for char in s:
+            if char in mapping:
+                # Closing bracket
+                # Pop from stack (use dummy if empty)
+                top = stack.pop() if stack else '#'
+                # Check if it matches
+                if mapping[char] != top:
+                    return False
+            else:
+                # Opening bracket
+                stack.append(char)
+
+        # Valid if stack is empty (all brackets matched)
+        return not stack
+
+    # Alternative: More explicit version
+    def isValid2(self, s: str) -> bool:
+        stack = []
+
+        for char in s:
+            if char in '({[':
+                # Opening bracket
+                stack.append(char)
+            else:
+                # Closing bracket
+                if not stack:
+                    return False
+
+                top = stack.pop()
+                if char == ')' and top != '(':
+                    return False
+                if char == '}' and top != '{':
+                    return False
+                if char == ']' and top != '[':
+                    return False
+
+        return len(stack) == 0
+
+# Time Complexity: O(n) - single pass through string
+# Space Complexity: O(n) - stack in worst case
+#
+# Stack Pattern for Matching:
+# 1. Push opening symbols
+# 2. Pop and verify when seeing closing symbols
+# 3. Check stack is empty at end
+#
+# This pattern applies to many problems:
+# - HTML/XML tag validation
+# - Expression evaluation
+# - Balanced sequences
+```

@@ -1,0 +1,71 @@
+---
+title: leetcode-739 Daily Temperatures
+date: '2025-10-28'
+tags: ['leetcode', 'stack', 'monotonic-stack']
+---
+
+[[739] Daily Temperatures](https://leetcode.com/problems/daily-temperatures/)
+
+**Key Concept: Monotonic Stack** - Use a stack to maintain indices in decreasing order of temperatures. When we find a warmer day, pop all colder days from stack and calculate their waiting times. This is the **monotonic decreasing stack pattern**.
+
+**Pattern:** Monotonic stack is crucial for "next greater/smaller element" problems.
+
+```python
+# Given an array of integers temperatures where temperatures[i] represents the
+# daily temperatures on the ith day, return an array answer such that answer[i]
+# is the number of days you have to wait after the ith day to get a warmer
+# temperature. If there is no future day with a warmer temperature, keep answer[i] == 0.
+#
+# Example 1:
+# Input: temperatures = [73,74,75,71,69,72,76,73]
+# Output: [1,1,4,2,1,1,0,0]
+#
+# Example 2:
+# Input: temperatures = [30,40,50,60]
+# Output: [1,1,1,0]
+#
+# Example 3:
+# Input: temperatures = [30,60,90]
+# Output: [1,1,0]
+#
+# Constraints:
+# 1 <= temperatures.length <= 10^5
+# 30 <= temperatures[i] <= 100
+
+class Solution:
+    def dailyTemperatures(self, temperatures: List[int]) -> List[int]:
+        n = len(temperatures)
+        answer = [0] * n
+        stack = []  # Stack stores indices
+
+        for i in range(n):
+            # While current temp is warmer than stack top
+            while stack and temperatures[i] > temperatures[stack[-1]]:
+                prev_index = stack.pop()
+                # Calculate days to wait
+                answer[prev_index] = i - prev_index
+
+            # Push current index
+            stack.append(i)
+
+        # Remaining indices in stack have no warmer day (already 0)
+        return answer
+
+# Time Complexity: O(n) - each index pushed and popped at most once
+# Space Complexity: O(n) - stack in worst case
+#
+# Monotonic Stack Pattern:
+# - Maintain indices in monotonically decreasing order (by temperature)
+# - When we find a larger value, pop smaller values and process them
+# - Push current index
+#
+# This pattern solves "next greater/smaller" problems efficiently!
+#
+# Related Problems:
+# - Next Greater Element I & II (LC 496, 503)
+# - Largest Rectangle in Histogram (LC 84)
+# - Trapping Rain Water (LC 42) - can also use monotonic stack
+#
+# Key Insight: Instead of brute force O(n^2) checking all future days,
+# use stack to efficiently find the next warmer day in O(n)
+```

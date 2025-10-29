@@ -1,0 +1,84 @@
+---
+title: leetcode-153 Find Minimum in Rotated Sorted Array
+date: '2025-10-28'
+tags: ['leetcode', 'binary-search']
+---
+
+[[153] Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/)
+
+**Key Concept: Binary Search for Rotation Point** - The minimum element is at the rotation point. Compare mid with right to determine which half contains the minimum. If nums[mid] > nums[right], minimum is in right half; otherwise, it's in left half (including mid).
+
+**Pattern:** Finding extremes in rotated sorted arrays.
+
+```python
+# Suppose an array of length n sorted in ascending order is rotated between
+# 1 and n times. Given the sorted rotated array nums of unique elements,
+# return the minimum element of this array.
+# You must write an algorithm that runs in O(log n) time.
+#
+# Example 1:
+# Input: nums = [3,4,5,1,2]
+# Output: 1
+# Explanation: The original array was [1,2,3,4,5] rotated 3 times.
+#
+# Example 2:
+# Input: nums = [4,5,6,7,0,1,2]
+# Output: 0
+#
+# Example 3:
+# Input: nums = [11,13,15,17]
+# Output: 11
+#
+# Constraints:
+# n == nums.length
+# 1 <= n <= 5000
+# -5000 <= nums[i] <= 5000
+# All integers in nums are unique.
+# nums is sorted and rotated between 1 and n times.
+
+class Solution:
+    def findMin(self, nums: List[int]) -> int:
+        left, right = 0, len(nums) - 1
+
+        while left < right:
+            mid = left + (right - left) // 2
+
+            # Compare mid with right to determine which half has minimum
+            if nums[mid] > nums[right]:
+                # Minimum is in right half (mid cannot be minimum)
+                left = mid + 1
+            else:
+                # Minimum is in left half (mid could be minimum)
+                right = mid
+
+        # left == right, pointing to minimum
+        return nums[left]
+
+# Alternative: Also handling duplicates (LC 154)
+class Solution2:
+    def findMin(self, nums: List[int]) -> int:
+        left, right = 0, len(nums) - 1
+
+        while left < right:
+            mid = left + (right - left) // 2
+
+            if nums[mid] > nums[right]:
+                left = mid + 1
+            elif nums[mid] < nums[right]:
+                right = mid
+            else:
+                # nums[mid] == nums[right], can't determine, skip right
+                right -= 1
+
+        return nums[left]
+
+# Time Complexity: O(log n) for unique elements, O(n) worst case with duplicates
+# Space Complexity: O(1)
+#
+# Key Insight: Compare nums[mid] with nums[right]
+# - If nums[mid] > nums[right]: rotation point is to the right
+# - If nums[mid] <= nums[right]: minimum is at mid or to the left
+#
+# Why compare with right instead of left?
+# Comparing with right gives clearer logic for determining which half to search
+```

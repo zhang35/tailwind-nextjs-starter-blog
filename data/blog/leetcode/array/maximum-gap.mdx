@@ -1,0 +1,136 @@
+---
+title: leetcode-164 Maximum Gap
+date: '2025-10-28'
+tags: ['leetcode', 'array', 'bucket-sort', 'radix-sort', 'airbnb']
+---
+
+[[164] Maximum Gap](https://leetcode.com/problems/maximum-gap/)
+
+**Key Concept: Bucket Sort / Pigeonhole Principle** - Maximum gap must be ≥ (max-min)/(n-1). Use buckets of this size. The maximum gap must occur between buckets, not within buckets.
+
+**Pattern:** O(n) sorting using bucket/radix sort when comparison-based sorting is not allowed.
+
+```python
+# Given an integer array nums, return the maximum difference between two
+# successive elements in its sorted form. If the array contains less than
+# two elements, return 0.
+# You must write an algorithm that runs in linear time and uses linear extra space.
+#
+# Example 1:
+# Input: nums = [3,6,9,1]
+# Output: 3
+# Explanation: Sorted form is [1,3,6,9], max gap = 3
+#
+# Example 2:
+# Input: nums = [10]
+# Output: 0
+#
+# Constraints:
+# 1 <= nums.length <= 10^5
+# 0 <= nums[i] <= 10^9
+
+class Solution:
+    # Approach 1: Bucket Sort (Optimal O(n))
+    def maximumGap(self, nums: List[int]) -> int:
+        if len(nums) < 2:
+            return 0
+
+        n = len(nums)
+        min_val, max_val = min(nums), max(nums)
+
+        if min_val == max_val:
+            return 0
+
+        # Bucket size (ceiling division)
+        bucket_size = max(1, (max_val - min_val) // (n - 1))
+        bucket_count = (max_val - min_val) // bucket_size + 1
+
+        # Track min and max in each bucket
+        buckets_min = [float('inf')] * bucket_count
+        buckets_max = [float('-inf')] * bucket_count
+
+        # Place each number in its bucket
+        for num in nums:
+            bucket_idx = (num - min_val) // bucket_size
+            buckets_min[bucket_idx] = min(buckets_min[bucket_idx], num)
+            buckets_max[bucket_idx] = max(buckets_max[bucket_idx], num)
+
+        # Find maximum gap between buckets
+        max_gap = 0
+        prev_max = min_val
+
+        for i in range(bucket_count):
+            # Skip empty buckets
+            if buckets_min[i] == float('inf'):
+                continue
+
+            # Gap is between previous bucket's max and current bucket's min
+            max_gap = max(max_gap, buckets_min[i] - prev_max)
+            prev_max = buckets_max[i]
+
+        return max_gap
+
+    # Approach 2: Radix Sort (also O(n))
+    def maximumGap2(self, nums: List[int]) -> int:
+        if len(nums) < 2:
+            return 0
+
+        # Radix sort
+        def radix_sort(arr):
+            max_val = max(arr)
+            exp = 1
+
+            while max_val // exp > 0:
+                counting_sort(arr, exp)
+                exp *= 10
+
+        def counting_sort(arr, exp):
+            n = len(arr)
+            output = [0] * n
+            count = [0] * 10
+
+            # Count occurrences
+            for num in arr:
+                index = (num // exp) % 10
+                count[index] += 1
+
+            # Cumulative count
+            for i in range(1, 10):
+                count[i] += count[i - 1]
+
+            # Build output array
+            for i in range(n - 1, -1, -1):
+                index = (arr[i] // exp) % 10
+                output[count[index] - 1] = arr[i]
+                count[index] -= 1
+
+            # Copy to original array
+            for i in range(n):
+                arr[i] = output[i]
+
+        radix_sort(nums)
+
+        # Find max gap in sorted array
+        max_gap = 0
+        for i in range(1, len(nums)):
+            max_gap = max(max_gap, nums[i] - nums[i - 1])
+
+        return max_gap
+
+# Bucket Sort: Time O(n), Space O(n)
+# Radix Sort: Time O(d*n) where d is digits, Space O(n)
+#
+# Key Insight (Bucket Sort):
+# - Pigeonhole principle: With n numbers in range [min, max],
+#   maximum gap ≥ ceiling((max-min)/(n-1))
+# - Use buckets of this size
+# - Maximum gap must be between buckets, not within buckets
+# - Only need to track min and max of each bucket
+#
+# Why maximum gap is between buckets?
+# - Average gap = (max-min)/(n-1)
+# - If max gap were within a bucket, all gaps would be ≤ bucket_size
+# - But we chose bucket_size = ceiling(average gap)
+# - So max gap must be between buckets!
+#
+# AirBnB: Tests understanding of non-comparison based sorting

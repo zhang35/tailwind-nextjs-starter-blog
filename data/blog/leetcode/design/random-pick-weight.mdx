@@ -1,0 +1,120 @@
+---
+title: leetcode-528 Random Pick with Weight
+date: '2025-10-28'
+tags: ['leetcode', 'design', 'binary-search', 'random', 'prefix-sum', 'airbnb']
+---
+
+[[528] Random Pick with Weight](https://leetcode.com/problems/random-pick-with-weight/)
+
+**Key Concept: Prefix Sum + Binary Search** - Build prefix sum array where each element represents cumulative weight. Generate random number in [0, total_weight), use binary search to find corresponding index.
+
+**Pattern:** Weighted random sampling using cumulative distribution.
+
+```python
+# You are given a 0-indexed array of positive integers w where w[i] describes
+# the weight of the ith index.
+# Implement the pickIndex() function which randomly picks an index in proportion
+# to its weight.
+#
+# Example:
+# Input: ["Solution", "pickIndex", "pickIndex", "pickIndex", "pickIndex", "pickIndex"]
+#        [[[1]], [], [], [], [], []]
+# Output: [null, 0, 0, 0, 0, 0]
+#
+# Input: ["Solution", "pickIndex", "pickIndex", "pickIndex", "pickIndex", "pickIndex"]
+#        [[[1, 3]], [], [], [], [], []]
+# Output: [null, 1, 1, 1, 1, 0]
+# Explanation: pickIndex() should return 0 with 25% probability and 1 with 75% probability.
+#
+# Constraints:
+# 1 <= w.length <= 10^4
+# 1 <= w[i] <= 10^5
+# pickIndex will be called at most 10^4 times.
+
+import random
+from bisect import bisect_left
+
+class Solution:
+    def __init__(self, w: List[int]):
+        # Build prefix sum array (cumulative weights)
+        self.prefix_sums = []
+        total = 0
+        for weight in w:
+            total += weight
+            self.prefix_sums.append(total)
+        self.total_weight = total
+
+    def pickIndex(self) -> int:
+        # Generate random number in [1, total_weight]
+        # Why start from 1? To handle case where first weight is selected
+        target = random.randint(1, self.total_weight)
+
+        # Binary search to find the index
+        # Find first prefix sum >= target
+        left, right = 0, len(self.prefix_sums) - 1
+
+        while left < right:
+            mid = (left + right) // 2
+            if self.prefix_sums[mid] < target:
+                left = mid + 1
+            else:
+                right = mid
+
+        return left
+
+    # Using bisect (cleaner)
+    def pickIndex2(self) -> int:
+        target = random.randint(1, self.total_weight)
+        return bisect_left(self.prefix_sums, target)
+
+
+# Alternative: More explicit prefix sum
+class Solution2:
+    def __init__(self, w: List[int]):
+        self.prefix_sums = []
+        prefix_sum = 0
+        for weight in w:
+            prefix_sum += weight
+            self.prefix_sums.append(prefix_sum)
+
+    def pickIndex(self) -> int:
+        # Random float in [0, total_weight)
+        target = random.random() * self.prefix_sums[-1]
+
+        # Linear search (for small arrays)
+        for i, prefix_sum in enumerate(self.prefix_sums):
+            if target < prefix_sum:
+                return i
+
+        return len(self.prefix_sums) - 1
+
+# Time Complexity:
+#   __init__: O(n) to build prefix sums
+#   pickIndex: O(log n) with binary search, O(n) with linear search
+# Space Complexity: O(n) for prefix sum array
+#
+# Algorithm Explanation:
+# 1. Convert weights to cumulative distribution (prefix sums)
+#    Example: weights = [1, 3, 2]
+#             prefix = [1, 4, 6]
+#
+# 2. Generate random number in [1, total_weight] = [1, 6]
+#    Random ranges mapped to indices:
+#    [1, 1] -> index 0 (probability 1/6)
+#    [2, 4] -> index 1 (probability 3/6)
+#    [5, 6] -> index 2 (probability 2/6)
+#
+# 3. Binary search to find first prefix sum >= random number
+#
+# Why it works:
+# - Larger weights get larger ranges in the random distribution
+# - Probability of selecting index i = w[i] / sum(w)
+#
+# Visualization:
+# weights:    [1,    3,    2]
+# prefix:     [1,    4,    6]
+# ranges:     [1-1][2-4][5-6]
+# index:        0     1     2
+#
+# AirBnB: Tests probability, binary search, and sampling
+# Real-world: Load balancing, A/B testing, recommendation systems

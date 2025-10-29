@@ -1,0 +1,94 @@
+---
+title: leetcode-300 Longest Increasing Subsequence
+date: '2025-10-28'
+tags: ['leetcode', 'dp', 'binary-search']
+---
+
+[[300] Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)
+
+**Key Concept: DP with Binary Search Optimization** - Classic DP is O(n²). Maintain an array of smallest tail elements for increasing subsequences of each length, and use binary search for O(n log n) solution.
+
+**Two approaches:** O(n²) DP for learning, O(n log n) with binary search for optimization.
+
+```python
+# Given an integer array nums, return the length of the longest strictly
+# increasing subsequence.
+#
+# Example 1:
+# Input: nums = [10,9,2,5,3,7,101,18]
+# Output: 4
+# Explanation: The LIS is [2,3,7,101], length is 4.
+#
+# Example 2:
+# Input: nums = [0,1,0,3,2,3]
+# Output: 4
+#
+# Example 3:
+# Input: nums = [7,7,7,7,7,7,7]
+# Output: 1
+#
+# Constraints:
+# 1 <= nums.length <= 2500
+# -10^4 <= nums[i] <= 10^4
+
+class Solution:
+    # Approach 1: Classic DP O(n^2)
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        n = len(nums)
+        # dp[i] = length of LIS ending at index i
+        dp = [1] * n
+
+        for i in range(1, n):
+            # Check all previous elements
+            for j in range(i):
+                if nums[j] < nums[i]:
+                    # Can extend the LIS ending at j
+                    dp[i] = max(dp[i], dp[j] + 1)
+
+        return max(dp)
+
+    # Approach 2: Binary Search O(n log n) - Optimal!
+    def lengthOfLIS2(self, nums: List[int]) -> int:
+        # tails[i] = smallest tail element for LIS of length i+1
+        tails = []
+
+        for num in nums:
+            # Binary search for position to insert/replace
+            left, right = 0, len(tails)
+            while left < right:
+                mid = (left + right) // 2
+                if tails[mid] < num:
+                    left = mid + 1
+                else:
+                    right = mid
+
+            # If num is larger than all tails, append
+            if left == len(tails):
+                tails.append(num)
+            else:
+                # Replace to keep smallest possible tail
+                tails[left] = num
+
+        return len(tails)
+
+    # Using bisect library for cleaner code
+    def lengthOfLIS3(self, nums: List[int]) -> int:
+        from bisect import bisect_left
+        tails = []
+
+        for num in nums:
+            pos = bisect_left(tails, num)
+            if pos == len(tails):
+                tails.append(num)
+            else:
+                tails[pos] = num
+
+        return len(tails)
+
+# DP: Time O(n^2), Space O(n)
+# Binary Search: Time O(n log n), Space O(n)
+#
+# DP Recurrence: dp[i] = max(dp[j] + 1) for all j < i where nums[j] < nums[i]
+# Key Insight for O(n log n): Maintain smallest tail for each length,
+# use binary search to find where current element fits
+```

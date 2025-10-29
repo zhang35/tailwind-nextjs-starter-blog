@@ -1,0 +1,66 @@
+---
+title: leetcode-4 Median of Two Sorted Arrays
+date: '2025-10-28'
+tags: ['leetcode', 'binary-search', 'array', 'divide-and-conquer', 'airbnb']
+---
+
+[[4] Median of Two Sorted Arrays](https://leetcode.com/problems/median-of-two-sorted-arrays/)
+
+**Key Concept: Binary Search on Smaller Array** - Use binary search to partition both arrays such that left half has same number of elements as right half. Find correct partition where `max(left) <= min(right)`.
+
+**Pattern:** Binary search for kth element in two sorted arrays.
+
+```python
+# Given two sorted arrays nums1 and nums2, return the median.
+# The overall run time complexity should be O(log (m+n)).
+#
+# Example 1:
+# Input: nums1 = [1,3], nums2 = [2]
+# Output: 2.00000
+#
+# Example 2:
+# Input: nums1 = [1,2], nums2 = [3,4]
+# Output: 2.50000
+
+class Solution:
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        # Ensure nums1 is the smaller array
+        if len(nums1) > len(nums2):
+            nums1, nums2 = nums2, nums1
+
+        m, n = len(nums1), len(nums2)
+        left, right = 0, m
+
+        while left <= right:
+            # Partition nums1 at i
+            i = (left + right) // 2
+            # Partition nums2 at j (to balance elements)
+            j = (m + n + 1) // 2 - i
+
+            # Get max of left partitions
+            maxLeft1 = nums1[i-1] if i > 0 else float('-inf')
+            maxLeft2 = nums2[j-1] if j > 0 else float('-inf')
+
+            # Get min of right partitions
+            minRight1 = nums1[i] if i < m else float('inf')
+            minRight2 = nums2[j] if j < n else float('inf')
+
+            # Check if partition is correct
+            if maxLeft1 <= minRight2 and maxLeft2 <= minRight1:
+                # Found correct partition
+                if (m + n) % 2 == 0:
+                    return (max(maxLeft1, maxLeft2) + min(minRight1, minRight2)) / 2
+                else:
+                    return max(maxLeft1, maxLeft2)
+            elif maxLeft1 > minRight2:
+                # Too many elements in left of nums1
+                right = i - 1
+            else:
+                # Too few elements in left of nums1
+                left = i + 1
+
+        return 0.0
+
+# Time: O(log min(m,n)), Space: O(1)
+# AirBnB: Hard problem, tests binary search mastery
+```

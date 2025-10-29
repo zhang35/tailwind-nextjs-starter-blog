@@ -1,0 +1,81 @@
+---
+title: leetcode-94 Binary Tree Inorder Traversal
+date: '2025-10-28'
+tags: ['leetcode', 'binary-tree', 'dfs']
+---
+
+[[94] Binary Tree Inorder Traversal](https://leetcode.com/problems/binary-tree-inorder-traversal/)
+
+**Key Concept: Tree Traversal Fundamentals** - Inorder traversal visits nodes in the order: Left → Root → Right. For BST, this produces values in sorted order.
+
+**Three approaches:** Recursive (most intuitive), Iterative with stack (mimics recursion), Morris (O(1) space but modifies tree temporarily).
+
+```python
+# Given the root of a binary tree, return the inorder traversal of its nodes' values.
+#
+# Example 1:
+# Input: root = [1,null,2,3]
+# Output: [1,3,2]
+#
+# Example 2:
+# Input: root = []
+# Output: []
+#
+# Example 3:
+# Input: root = [1]
+# Output: [1]
+#
+# Constraints:
+# The number of nodes in the tree is in the range [0, 100].
+# -100 <= Node.val <= 100
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+class Solution:
+    # Approach 1: Recursive (Most Intuitive)
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        result = []
+
+        def inorder(node):
+            if not node:
+                return
+            inorder(node.left)   # Visit left subtree
+            result.append(node.val)  # Visit root
+            inorder(node.right)  # Visit right subtree
+
+        inorder(root)
+        return result
+
+    # Approach 2: Iterative with Stack
+    def inorderTraversal2(self, root: Optional[TreeNode]) -> List[int]:
+        result = []
+        stack = []
+        current = root
+
+        while current or stack:
+            # Go to the leftmost node
+            while current:
+                stack.append(current)
+                current = current.left
+
+            # Process node
+            current = stack.pop()
+            result.append(current.val)
+
+            # Move to right subtree
+            current = current.right
+
+        return result
+
+# Recursive: Time O(n), Space O(h) where h is height (call stack)
+# Iterative: Time O(n), Space O(h) for explicit stack
+#
+# Remember: Inorder = Left, Root, Right
+# Preorder = Root, Left, Right
+# Postorder = Left, Right, Root
+```

@@ -1,0 +1,32 @@
+---
+title: leetcode-162 Find Peak Element
+date: '2025-10-28'
+tags: ['leetcode', 'binary-search', 'array', 'airbnb']
+---
+
+[[162] Find Peak Element](https://leetcode.com/problems/find-peak-element/)
+
+**Key Concept: Binary Search on Unsorted Array** - A peak exists if we always move toward the higher neighbor. Use binary search comparing mid with mid+1.
+
+```python
+# Find a peak element in the array. Return any peak index.
+
+class Solution:
+    def findPeakElement(self, nums: List[int]) -> int:
+        left, right = 0, len(nums) - 1
+
+        while left < right:
+            mid = (left + right) // 2
+
+            if nums[mid] > nums[mid + 1]:
+                # Peak is on the left (including mid)
+                right = mid
+            else:
+                # Peak is on the right
+                left = mid + 1
+
+        return left
+
+# Time: O(log n), Space: O(1)
+# AirBnB: Tests binary search on non-sorted arrays
+```

@@ -1,0 +1,118 @@
+---
+title: leetcode-10 Regular Expression Matching
+date: '2025-10-28'
+tags: ['leetcode', 'dp', 'string', 'recursion', 'airbnb']
+---
+
+[[10] Regular Expression Matching](https://leetcode.com/problems/regular-expression-matching/)
+
+**Key Concept: 2D DP with Pattern Matching** - Build a DP table where `dp[i][j]` indicates if `s[0:i]` matches `p[0:j]`. Handle `.` (any char) and `*` (zero or more of previous char) with careful state transitions.
+
+**Pattern:** Complex string matching with DP.
+
+```python
+# Given an input string s and a pattern p, implement regular expression matching
+# with support for '.' and '*' where:
+# - '.' Matches any single character.
+# - '*' Matches zero or more of the preceding element.
+# The matching should cover the entire input string (not partial).
+#
+# Example 1:
+# Input: s = "aa", p = "a"
+# Output: false
+#
+# Example 2:
+# Input: s = "aa", p = "a*"
+# Output: true
+#
+# Example 3:
+# Input: s = "ab", p = ".*"
+# Output: true
+#
+# Constraints:
+# 1 <= s.length <= 20
+# 1 <= p.length <= 20
+# s contains only lowercase English letters.
+# p contains only lowercase English letters, '.', and '*'.
+
+class Solution:
+    # Approach 1: 2D DP (Bottom-up)
+    def isMatch(self, s: str, p: str) -> bool:
+        m, n = len(s), len(p)
+        # dp[i][j] = whether s[0:i] matches p[0:j]
+        dp = [[False] * (n + 1) for _ in range(m + 1)]
+
+        # Empty string matches empty pattern
+        dp[0][0] = True
+
+        # Handle patterns like a*, a*b*, a*b*c* (match empty string)
+        for j in range(2, n + 1):
+            if p[j-1] == '*':
+                dp[0][j] = dp[0][j-2]
+
+        for i in range(1, m + 1):
+            for j in range(1, n + 1):
+                if p[j-1] == '*':
+                    # '*' can match zero or more of preceding element
+                    # Zero occurrence: dp[i][j-2]
+                    dp[i][j] = dp[i][j-2]
+
+                    # One or more occurrence: check if preceding char matches
+                    if p[j-2] == s[i-1] or p[j-2] == '.':
+                        dp[i][j] = dp[i][j] or dp[i-1][j]
+                else:
+                    # Current characters match
+                    if p[j-1] == s[i-1] or p[j-1] == '.':
+                        dp[i][j] = dp[i-1][j-1]
+
+        return dp[m][n]
+
+    # Approach 2: Recursion with Memoization
+    def isMatch2(self, s: str, p: str) -> bool:
+        memo = {}
+
+        def dp(i, j):
+            if (i, j) in memo:
+                return memo[(i, j)]
+
+            # Base case: reached end of pattern
+            if j == len(p):
+                return i == len(s)
+
+            # Check if current characters match
+            first_match = i < len(s) and (p[j] == s[i] or p[j] == '.')
+
+            # Handle '*'
+            if j + 1 < len(p) and p[j + 1] == '*':
+                # Two options:
+                # 1. Use '*' to match zero occurrences (skip p[j] and '*')
+                # 2. Use '*' to match one or more (must have first_match)
+                result = dp(i, j + 2) or (first_match and dp(i + 1, j))
+            else:
+                # No '*', must match current character and continue
+                result = first_match and dp(i + 1, j + 1)
+
+            memo[(i, j)] = result
+            return result
+
+        return dp(0, 0)
+
+# Time Complexity: O(m * n)
+# Space Complexity: O(m * n)
+#
+# Key Transitions:
+# 1. p[j] is regular char:
+#    dp[i][j] = dp[i-1][j-1] if s[i] == p[j]
+#
+# 2. p[j] is '.':
+#    dp[i][j] = dp[i-1][j-1] (matches any char)
+#
+# 3. p[j] is '*':
+#    - Match zero: dp[i][j] = dp[i][j-2]
+#    - Match one+: dp[i][j] = dp[i-1][j] if s[i] matches p[j-1]
+#
+# Example: s = "aab", p = "c*a*b"
+# dp[3][5] = true
+# c* matches empty, a* matches "aa", b matches "b"
+#
+# AirBnB: Tests complex DP and pattern matching logic

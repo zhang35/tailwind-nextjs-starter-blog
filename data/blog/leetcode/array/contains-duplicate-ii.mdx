@@ -1,0 +1,80 @@
+---
+title: leetcode-219 Contains Duplicate II
+date: '2025-10-28'
+tags: ['leetcode', 'array', 'hash-table', 'sliding-window', 'airbnb']
+---
+
+[[219] Contains Duplicate II](https://leetcode.com/problems/contains-duplicate-ii/)
+
+**Key Concept: Hash Map with Index Tracking** - Use hash map to store most recent index of each number. Check if current index - previous index ≤ k.
+
+**Pattern:** Sliding window with hash map for tracking duplicates within distance k.
+
+```python
+# Given an integer array nums and an integer k, return true if there are two
+# distinct indices i and j such that nums[i] == nums[j] and abs(i - j) <= k.
+#
+# Example 1:
+# Input: nums = [1,2,3,1], k = 3
+# Output: true
+#
+# Example 2:
+# Input: nums = [1,0,1,1], k = 1
+# Output: true
+#
+# Example 3:
+# Input: nums = [1,2,3,1,2,3], k = 2
+# Output: false
+#
+# Constraints:
+# 1 <= nums.length <= 10^5
+# -10^9 <= nums[i] <= 10^9
+# 0 <= k <= 10^5
+
+class Solution:
+    # Approach 1: Hash Map (Optimal)
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        # Map: number -> most recent index
+        index_map = {}
+
+        for i, num in enumerate(nums):
+            if num in index_map:
+                # Check distance
+                if i - index_map[num] <= k:
+                    return True
+
+            # Update to most recent index
+            index_map[num] = i
+
+        return False
+
+    # Approach 2: Sliding Window with Set
+    def containsNearbyDuplicate2(self, nums: List[int], k: int) -> bool:
+        # Maintain a set of elements within window of size k
+        window = set()
+
+        for i, num in enumerate(nums):
+            # If window size exceeds k, remove leftmost element
+            if i > k:
+                window.remove(nums[i - k - 1])
+
+            # Check if current number already in window
+            if num in window:
+                return True
+
+            window.add(num)
+
+        return False
+
+# Hash Map: Time O(n), Space O(min(n, k))
+# Sliding Window: Time O(n), Space O(min(n, k))
+#
+# Key Pattern: Hash map for tracking with constraints
+# - Store most recent occurrence
+# - Check distance constraint when duplicate found
+#
+# Related Problems:
+# - Contains Duplicate (LC 217)
+# - Contains Duplicate III (LC 220) - uses TreeSet/OrderedDict
+#
+# AirBnB: Tests hash map usage and distance constraints

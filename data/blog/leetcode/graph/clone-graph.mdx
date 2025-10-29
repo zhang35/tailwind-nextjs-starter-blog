@@ -1,0 +1,96 @@
+---
+title: leetcode-133 Clone Graph
+date: '2025-10-28'
+tags: ['leetcode', 'graph', 'dfs', 'bfs', 'hash-table']
+---
+
+[[133] Clone Graph](https://leetcode.com/problems/clone-graph/)
+
+**Key Concept: Deep Copy with HashMap** - Use a hash map to track original node → cloned node mapping. This prevents creating duplicate clones and handles cycles properly.
+
+**Pattern:** Essential pattern for cloning any graph structure (appears in linked list, tree, and graph problems).
+
+```python
+# Given a reference of a node in a connected undirected graph, return a deep
+# copy (clone) of the graph. Each node contains a value and a list of neighbors.
+#
+# class Node {
+#     public int val;
+#     public List<Node> neighbors;
+# }
+#
+# Example 1:
+# Input: adjList = [[2,4],[1,3],[2,4],[1,3]]
+# Output: [[2,4],[1,3],[2,4],[1,3]]
+#
+# Constraints:
+# The number of nodes in the graph is in the range [0, 100].
+# 1 <= Node.val <= 100
+# There are no repeated edges and no self-loops in the graph.
+
+# Definition for a Node.
+# class Node:
+#     def __init__(self, val = 0, neighbors = None):
+#         self.val = val
+#         self.neighbors = neighbors if neighbors is not None else []
+
+class Solution:
+    # Approach 1: DFS with HashMap
+    def cloneGraph(self, node: 'Node') -> 'Node':
+        if not node:
+            return None
+
+        # Map original node to cloned node
+        cloned = {}
+
+        def dfs(node):
+            # If already cloned, return the clone
+            if node in cloned:
+                return cloned[node]
+
+            # Create clone for current node
+            clone = Node(node.val)
+            cloned[node] = clone
+
+            # Clone all neighbors
+            for neighbor in node.neighbors:
+                clone.neighbors.append(dfs(neighbor))
+
+            return clone
+
+        return dfs(node)
+
+    # Approach 2: BFS with HashMap
+    def cloneGraph2(self, node: 'Node') -> 'Node':
+        if not node:
+            return None
+
+        from collections import deque
+
+        cloned = {node: Node(node.val)}
+        queue = deque([node])
+
+        while queue:
+            current = queue.popleft()
+
+            for neighbor in current.neighbors:
+                if neighbor not in cloned:
+                    # Clone the neighbor
+                    cloned[neighbor] = Node(neighbor.val)
+                    queue.append(neighbor)
+
+                # Add cloned neighbor to current clone's neighbors
+                cloned[current].neighbors.append(cloned[neighbor])
+
+        return cloned[node]
+
+# Time Complexity: O(V + E) - visit each node and edge once
+# Space Complexity: O(V) - hash map stores all nodes
+#
+# Key Pattern: HashMap for tracking original → clone mapping
+# Essential for preventing infinite loops in graphs with cycles!
+# This same pattern works for:
+# - Copy List with Random Pointer (LC 138)
+# - Clone Binary Tree with Random Pointer
+# - Clone N-ary Tree
+```

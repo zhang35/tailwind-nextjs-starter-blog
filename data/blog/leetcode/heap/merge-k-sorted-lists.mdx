@@ -1,0 +1,107 @@
+---
+title: leetcode-23 Merge K Sorted Lists
+date: '2025-10-28'
+tags: ['leetcode', 'heap', 'linked-list', 'divide-and-conquer']
+---
+
+[[23] Merge K Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/)
+
+**Key Concept: Min-Heap for K-Way Merge** - Use a min-heap to efficiently select the smallest element among k list heads. Always pick the globally smallest element to build the merged list.
+
+**Alternative:** Divide and conquer by merging pairs of lists.
+
+```python
+# You are given an array of k linked-lists lists, each linked-list is sorted
+# in ascending order. Merge all the linked-lists into one sorted linked-list.
+#
+# Example 1:
+# Input: lists = [[1,4,5],[1,3,4],[2,6]]
+# Output: [1,1,2,3,4,4,5,6]
+#
+# Example 2:
+# Input: lists = []
+# Output: []
+#
+# Example 3:
+# Input: lists = [[]]
+# Output: []
+#
+# Constraints:
+# k == lists.length
+# 0 <= k <= 10^4
+# 0 <= lists[i].length <= 500
+# -10^4 <= lists[i][j] <= 10^4
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+
+import heapq
+
+class Solution:
+    # Approach 1: Min-Heap
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        # Min-heap: (value, index, node)
+        # index is to handle comparison when values are equal
+        heap = []
+
+        # Initialize heap with first node from each list
+        for i, head in enumerate(lists):
+            if head:
+                heapq.heappush(heap, (head.val, i, head))
+
+        dummy = ListNode(0)
+        current = dummy
+
+        while heap:
+            val, i, node = heapq.heappop(heap)
+            current.next = node
+            current = current.next
+
+            # Add next node from same list
+            if node.next:
+                heapq.heappush(heap, (node.next.val, i, node.next))
+
+        return dummy.next
+
+    # Approach 2: Divide and Conquer
+    def mergeKLists2(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        if not lists:
+            return None
+
+        def merge2Lists(l1, l2):
+            dummy = ListNode(0)
+            current = dummy
+
+            while l1 and l2:
+                if l1.val < l2.val:
+                    current.next = l1
+                    l1 = l1.next
+                else:
+                    current.next = l2
+                    l2 = l2.next
+                current = current.next
+
+            current.next = l1 if l1 else l2
+            return dummy.next
+
+        # Merge pairs of lists iteratively
+        while len(lists) > 1:
+            merged_lists = []
+            for i in range(0, len(lists), 2):
+                l1 = lists[i]
+                l2 = lists[i + 1] if i + 1 < len(lists) else None
+                merged_lists.append(merge2Lists(l1, l2))
+            lists = merged_lists
+
+        return lists[0]
+
+# Heap: Time O(N log k), Space O(k)
+#   where N = total nodes, k = number of lists
+# Divide & Conquer: Time O(N log k), Space O(1)
+#
+# Key Pattern: Min-heap for k-way merge problems
+# Heap maintains smallest element among k candidates
+```

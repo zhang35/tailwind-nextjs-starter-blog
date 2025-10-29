@@ -1,0 +1,44 @@
+---
+title: leetcode-756 Pyramid Transition Matrix
+date: '2025-10-28'
+tags: ['leetcode', 'backtrack', 'dfs', 'memoization', 'airbnb']
+---
+
+[[756] Pyramid Transition Matrix](https://leetcode.com/problems/pyramid-transition-matrix/)
+
+**Key Concept: Backtracking with Memoization** - Build pyramid level by level using allowed transitions, backtrack when stuck.
+
+```python
+# Given bottom row and allowed transitions, determine if pyramid can be built.
+
+class Solution:
+    def pyramidTransition(self, bottom: str, allowed: List[str]) -> bool:
+        from collections import defaultdict
+
+        # Build transition map: (left, right) -> [possible tops]
+        transitions = defaultdict(list)
+        for s in allowed:
+            transitions[(s[0], s[1])].append(s[2])
+
+        def build(bottom):
+            if len(bottom) == 1:
+                return True
+
+            # Try to build next level
+            def dfs(current, idx):
+                if idx == len(bottom) - 1:
+                    return build(current)
+
+                for top in transitions.get((bottom[idx], bottom[idx + 1]), []):
+                    if dfs(current + top, idx + 1):
+                        return True
+
+                return False
+
+            return dfs("", 0)
+
+        return build(bottom)
+
+# Time: O(A^N) where A is alphabet size, N is length
+# AirBnB: Tests backtracking and optimization
+```

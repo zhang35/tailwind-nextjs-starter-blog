@@ -1,0 +1,78 @@
+---
+title: leetcode-102 Binary Tree Level Order Traversal
+date: '2025-10-28'
+tags: ['leetcode', 'binary-tree', 'bfs']
+---
+
+[[102] Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/)
+
+**Key Concept: BFS with Level Tracking** - Use a queue to process nodes level by level. Track the number of nodes at each level to separate them in the result.
+
+**Pattern:** This BFS pattern appears in many tree problems. Key is processing all nodes at current level before moving to next level.
+
+```python
+# Given the root of a binary tree, return the level order traversal of its
+# nodes' values (i.e., from left to right, level by level).
+#
+# Example 1:
+# Input: root = [3,9,20,null,null,15,7]
+# Output: [[3],[9,20],[15,7]]
+#
+# Example 2:
+# Input: root = [1]
+# Output: [[1]]
+#
+# Example 3:
+# Input: root = []
+# Output: []
+#
+# Constraints:
+# The number of nodes in the tree is in the range [0, 2000].
+# -1000 <= Node.val <= 1000
+
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+
+from collections import deque
+
+class Solution:
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        if not root:
+            return []
+
+        result = []
+        queue = deque([root])
+
+        while queue:
+            level_size = len(queue)  # Number of nodes at current level
+            current_level = []
+
+            # Process all nodes at current level
+            for _ in range(level_size):
+                node = queue.popleft()
+                current_level.append(node.val)
+
+                # Add children to queue for next level
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+
+            result.append(current_level)
+
+        return result
+
+# Time Complexity: O(n) - visit each node once
+# Space Complexity: O(w) - where w is maximum width of tree (queue size)
+#
+# This BFS pattern is fundamental for many tree problems:
+# - Level order traversal variants
+# - Zigzag traversal
+# - Right side view
+# - Average of levels
+# Remember: len(queue) before processing gives exact level size!
+```

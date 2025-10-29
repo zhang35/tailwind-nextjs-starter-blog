@@ -1,0 +1,123 @@
+---
+title: leetcode-251 Flatten 2D Vector
+date: '2025-10-28'
+tags: ['leetcode', 'array', 'design', 'iterator', 'airbnb']
+---
+
+[[251] Flatten 2D Vector](https://leetcode.com/problems/flatten-2d-vector/)
+
+**Key Concept: Iterator Design with Two Pointers** - Use two pointers (row and column) to track current position. Skip empty rows. Implement hasNext() and next() following iterator pattern.
+
+**Pattern:** Iterator design for nested structures.
+
+```python
+# Design an iterator to flatten a 2D vector. It should support the next and
+# hasNext operations.
+#
+# Implement the Vector2D class:
+# - Vector2D(int[][] vec) initializes the object with the 2D vector vec.
+# - next() returns the next element from the 2D vector and moves the pointer
+#   to the next element.
+# - hasNext() returns true if there are still some elements in the vector,
+#   otherwise returns false.
+#
+# Example:
+# Input: ["Vector2D", "next", "next", "next", "hasNext", "hasNext", "next", "hasNext"]
+#        [[[[1, 2], [3], [4]]], [], [], [], [], [], [], []]
+# Output: [null, 1, 2, 3, true, true, 4, false]
+#
+# Constraints:
+# 0 <= vec.length <= 200
+# 0 <= vec[i].length <= 500
+# -500 <= vec[i][j] <= 500
+# At most 10^5 calls will be made to next and hasNext.
+
+class Vector2D:
+    def __init__(self, vec: List[List[int]]):
+        self.vec = vec
+        self.row = 0
+        self.col = 0
+        # Move to first valid position
+        self._advance_to_next()
+
+    def _advance_to_next(self):
+        """Move pointers to next valid element position"""
+        # Skip empty rows
+        while self.row < len(self.vec) and self.col >= len(self.vec[self.row]):
+            self.row += 1
+            self.col = 0
+
+    def next(self) -> int:
+        """Returns the next element and advances the pointer"""
+        if not self.hasNext():
+            raise StopIteration
+
+        result = self.vec[self.row][self.col]
+        self.col += 1
+        self._advance_to_next()
+        return result
+
+    def hasNext(self) -> bool:
+        """Returns true if there are still elements to iterate"""
+        return self.row < len(self.vec)
+
+
+# Alternative: Flatten during initialization
+class Vector2D2:
+    def __init__(self, vec: List[List[int]]):
+        # Flatten the 2D vector into 1D
+        self.nums = []
+        for row in vec:
+            self.nums.extend(row)
+        self.index = 0
+
+    def next(self) -> int:
+        if not self.hasNext():
+            raise StopIteration
+        result = self.nums[self.index]
+        self.index += 1
+        return result
+
+    def hasNext(self) -> bool:
+        return self.index < len(self.nums)
+
+
+# Alternative: Using generator (Pythonic)
+class Vector2D3:
+    def __init__(self, vec: List[List[int]]):
+        self.generator = (num for row in vec for num in row)
+        self.current = None
+        self._advance()
+
+    def _advance(self):
+        try:
+            self.current = next(self.generator)
+            self.has_next = True
+        except StopIteration:
+            self.has_next = False
+
+    def next(self) -> int:
+        if not self.hasNext():
+            raise StopIteration
+        result = self.current
+        self._advance()
+        return result
+
+    def hasNext(self) -> bool:
+        return self.has_next
+
+# Two Pointers: Time O(1) amortized for both operations, Space O(1)
+# Flatten: Time O(1) for operations but O(n) init, Space O(n)
+#
+# Key Pattern: Iterator design
+# - Track current position with pointers
+# - Handle empty elements/rows
+# - hasNext() checks availability without consuming
+# - next() returns and advances
+#
+# Tradeoff:
+# - Two pointers: O(1) space, need to handle empty rows
+# - Flatten: O(n) space, simpler logic
+#
+# AirBnB: Tests iterator design and handling edge cases
+# Important for designing data structure APIs

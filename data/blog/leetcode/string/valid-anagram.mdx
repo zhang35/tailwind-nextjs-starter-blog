@@ -1,0 +1,89 @@
+---
+title: leetcode-242 Valid Anagram
+date: '2025-10-28'
+tags: ['leetcode', 'string', 'hash-table', 'sorting']
+---
+
+[[242] Valid Anagram](https://leetcode.com/problems/valid-anagram/)
+
+**Key Concept: Character Frequency Counting** - Two strings are anagrams if they have the same character frequencies. Use hash map or array to count characters.
+
+**Multiple approaches:** Hash map, array (for limited charset), or sorting.
+
+```python
+# Given two strings s and t, return true if t is an anagram of s, and false otherwise.
+# An anagram is a word formed by rearranging the letters of another word,
+# using all original letters exactly once.
+#
+# Example 1:
+# Input: s = "anagram", t = "nagaram"
+# Output: true
+#
+# Example 2:
+# Input: s = "rat", t = "car"
+# Output: false
+#
+# Constraints:
+# 1 <= s.length, t.length <= 5 * 10^4
+# s and t consist of lowercase English letters.
+
+class Solution:
+    # Approach 1: Hash Map (most general)
+    def isAnagram(self, s: str, t: str) -> bool:
+        if len(s) != len(t):
+            return False
+
+        from collections import Counter
+        return Counter(s) == Counter(t)
+
+    # Approach 2: Manual counting with dict
+    def isAnagram2(self, s: str, t: str) -> bool:
+        if len(s) != len(t):
+            return False
+
+        count = {}
+
+        # Count characters in s
+        for char in s:
+            count[char] = count.get(char, 0) + 1
+
+        # Decrease count for characters in t
+        for char in t:
+            if char not in count:
+                return False
+            count[char] -= 1
+            if count[char] < 0:
+                return False
+
+        return True
+
+    # Approach 3: Array counting (for lowercase letters only)
+    def isAnagram3(self, s: str, t: str) -> bool:
+        if len(s) != len(t):
+            return False
+
+        # Array for 26 lowercase letters
+        count = [0] * 26
+
+        for i in range(len(s)):
+            count[ord(s[i]) - ord('a')] += 1
+            count[ord(t[i]) - ord('a')] -= 1
+
+        # All counts should be 0
+        return all(c == 0 for c in count)
+
+    # Approach 4: Sorting
+    def isAnagram4(self, s: str, t: str) -> bool:
+        return sorted(s) == sorted(t)
+
+# Hash Map/Array: Time O(n), Space O(1) for limited charset
+# Sorting: Time O(n log n), Space O(1) or O(n) depending on sort implementation
+#
+# Pattern: Character frequency problems
+# - Use Counter/HashMap for general case
+# - Use array for known limited charset (faster)
+# - Sorting works but is slower
+#
+# Follow-up: What if inputs contain Unicode characters?
+# Answer: Use HashMap (Counter) instead of array
+```

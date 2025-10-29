@@ -1,0 +1,45 @@
+---
+title: leetcode-81 Search in Rotated Sorted Array II
+date: '2025-10-28'
+tags: ['leetcode', 'binary-search', 'array', 'airbnb']
+---
+
+[[81] Search in Rotated Sorted Array II](https://leetcode.com/problems/search-in-rotated-sorted-array-ii/)
+
+**Key Concept: Binary Search with Duplicate Handling** - Similar to Search in Rotated Sorted Array, but handle duplicates by shrinking range when `nums[left] == nums[mid] == nums[right]`.
+
+```python
+# Search for target in rotated sorted array with duplicates.
+
+class Solution:
+    def search(self, nums: List[int], target: int) -> bool:
+        left, right = 0, len(nums) - 1
+
+        while left <= right:
+            mid = (left + right) // 2
+
+            if nums[mid] == target:
+                return True
+
+            # Handle duplicates
+            if nums[left] == nums[mid] == nums[right]:
+                left += 1
+                right -= 1
+            elif nums[left] <= nums[mid]:
+                # Left half is sorted
+                if nums[left] <= target < nums[mid]:
+                    right = mid - 1
+                else:
+                    left = mid + 1
+            else:
+                # Right half is sorted
+                if nums[mid] < target <= nums[right]:
+                    left = mid + 1
+                else:
+                    right = mid - 1
+
+        return False
+
+# Time: O(log n) average, O(n) worst case
+# AirBnB: Tests binary search with edge cases
+```
