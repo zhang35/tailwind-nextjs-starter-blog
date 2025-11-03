@@ -1,0 +1,17 @@
+---
+title: Use Nix & `flake.nix` to Set Up Your Environment
+date: '2025-11-03 09:00:00'
+tags: ['mac']
+draft: false
+---
+
+1. Install nix: https://nixos.org/download/
+2. Install direnv
+3. Install [Nix Extension Pack](https://open-vsx.org/extension/pinage404/nix-extension-pack) extension in VS Code/Cursor.
+4. Create a direnv config file at the root of the project: `.envrc`(e.g., `my-project/.envrc`):
+
+```bash
+use flake
+```
+
+5. Run `direnv allow` to allow the project to use the nix environment.
