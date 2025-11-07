@@ -21,8 +21,42 @@ brew install uv
 
 # Install desired Python version (via pyenv)
 
+We should always use the latest stable minor version (also known as a "patch release"). e.g. for the 3.13 series:
+
 ```bash
-pyenv install 3.13.5
+pyenv install 3.13
+```
+
+and it will automatically select the latest available patch release for you.
+
+## Common issues
+
+```
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import lzma
+  File "/Users/jiaqi/.pyenv/versions/3.13.9/lib/python3.13/lzma.py", line 27, in <module>
+    from _lzma import *
+ModuleNotFoundError: No module named '_lzma'
+```
+
+To fix it, run this first:
+
+```
+brew install xz
+```
+
+Then reinstall the python:
+
+```
+pyenv uninstall 3.13.9
+pyenv install 3.13.9
+```
+
+Add the following line to `~/.zshrc`:
+
+```sh
+eval "$(pyenv init -)"
 ```
 
 # Set local Python version for the project
@@ -30,7 +64,14 @@ pyenv install 3.13.5
 ```bash
 mkdir myproject
 cd myproject
-pyenv local 3.13.5  # creates a `.python-version` file
+pyenv local 3.13.9
+```
+
+It should now point to your pyenv shims directory, something like:
+
+```bash
+$ which python
+/Users/gene/.pyenv/shims/python
 ```
 
 # Create a virtual environment (via uv)
