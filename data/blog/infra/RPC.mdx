@@ -1,0 +1,154 @@
+---
+title: RPC(Remote Procedure Call) with Python example
+date: '2025-07-09'
+tags: ['infra']
+draft: false
+---
+
+# RPC
+
+A Remote Procedure Call (RPC) allows a program to execute a procedure on another computer or server as if it were a local function call, abstracting away the complexities of network communication.
+
+```python
+from xmlrpc.server import SimpleXMLRPCServer
+
+def add(a, b):
+    return a + b
+
+def multiply(a, b):
+    return a * b
+
+server = SimpleXMLRPCServer(("localhost", 8000))
+print("Listening on port 8000...")
+server.register_function(add, "add")
+server.register_function(multiply, "multiply")
+server.serve_forever()
+
+```
+
+```python
+import xmlrpc.client
+
+with xmlrpc.client.ServerProxy("http://localhost:8000/") as proxy:
+    print("3 + 5 = %d" % proxy.add(3, 5))
+    print("3 * 5 = %d" % proxy.multiply(3, 5))
+
+```
+
+# gRPC
+
+RPC vs gRPC
+
+| Feature            | gRPC                            | RPC (General)                                                 |
+| ------------------ | ------------------------------- | ------------------------------------------------------------- |
+| Data Serialization | Protocol Buffers (binary)       | Various (JSON, XML, Protobuf)                                 |
+| Transport Protocol | HTTP/2 (primarily)              | Varies (TCP, UDP, HTTP)                                       |
+| Performance        | Generally faster                | Varies depending on implementation                            |
+| Streaming          | Supports streaming              | May or may not support streaming                              |
+| Complexity         | Steeper learning curve          | Varies, can be simpler                                        |
+| Language Support   | Good support for many languages | Varies, depends on implementation                             |
+| Microservices      | Well-suited for microservices   | Can be used for microservices, but may not be the best choice |
+
+## gRPC Python Example
+
+First, define the service in a `.proto` file:
+
+```protobuf
+// calculator.proto
+syntax = "proto3";
+
+package calculator;
+
+service Calculator {
+  rpc Add (AddRequest) returns (AddResponse);
+  rpc Multiply (MultiplyRequest) returns (MultiplyResponse);
+}
+
+message AddRequest {
+  int32 a = 1;
+  int32 b = 2;
+}
+
+message AddResponse {
+  int32 result = 1;
+}
+
+message MultiplyRequest {
+  int32 a = 1;
+  int32 b = 2;
+}
+
+message MultiplyResponse {
+  int32 result = 1;
+}
+```
+
+Generate Python code from the proto file:
+
+```bash
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. calculator.proto
+```
+
+gRPC Server implementation:
+
+```python
+import grpc
+from concurrent import futures
+import calculator_pb2
+import calculator_pb2_grpc
+
+class CalculatorServicer(calculator_pb2_grpc.CalculatorServicer):
+    def Add(self, request, context):
+        result = request.a + request.b
+        return calculator_pb2.AddResponse(result=result)
+
+    def Multiply(self, request, context):
+        result = request.a * request.b
+        return calculator_pb2.MultiplyResponse(result=result)
+
+def serve():
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    calculator_pb2_grpc.add_CalculatorServicer_to_server(
+        CalculatorServicer(), server
+    )
+    server.add_insecure_port('[::]:50051')
+    server.start()
+    print("Server started, listening on port 50051...")
+    server.wait_for_termination()
+
+if __name__ == '__main__':
+    serve()
+```
+
+gRPC Client implementation:
+
+```python
+import grpc
+import calculator_pb2
+import calculator_pb2_grpc
+
+def run():
+    with grpc.insecure_channel('localhost:50051') as channel:
+        stub = calculator_pb2_grpc.CalculatorStub(channel)
+
+        # Call Add
+        add_request = calculator_pb2.AddRequest(a=3, b=5)
+        add_response = stub.Add(add_request)
+        print(f"3 + 5 = {add_response.result}")
+
+        # Call Multiply
+        multiply_request = calculator_pb2.MultiplyRequest(a=3, b=5)
+        multiply_response = stub.Multiply(multiply_request)
+        print(f"3 * 5 = {multiply_response.result}")
+
+if __name__ == '__main__':
+    run()
+```
+
+**Installation:**
+
+```bash
+pip install grpcio grpcio-tools
+```
+
+In essence: gRPC is a modern, high-performance RPC framework built for efficient communication, especially in distributed systems and microservices. While traditional RPC is a broader concept, it can be less performant than gRPC due to its reliance on potentially less efficient data formats and transport protocols.
