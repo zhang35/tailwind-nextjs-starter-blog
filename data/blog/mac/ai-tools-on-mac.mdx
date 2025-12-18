@@ -28,3 +28,25 @@ Then source the file:
 ```bash
 source ~/.zshrc
 ```
+
+# MCP Servers
+
+## Neon DB
+
+Claude: 
+
+`vim ~/.claude.json`
+
+```json
+        "neon": {
+          "type": "stdio",
+          "command": "npx",
+          "args": [
+            "-y",
+            "@neondatabase/mcp-server-neon",
+            "start",
+            "<YOUR_NEON_API_KEY>"
+          ],
+          "env": {}
+        }
+```
