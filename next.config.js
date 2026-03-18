@@ -68,9 +68,6 @@ module.exports = () => {
     basePath,
     reactStrictMode: true,
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
-    eslint: {
-      dirs: ['app', 'components', 'layouts', 'scripts'],
-    },
     images: {
       remotePatterns: [
         {
@@ -89,6 +86,9 @@ module.exports = () => {
       ]
     },
     turbopack: {
+      resolveAlias: {
+        'contentlayer/generated': './.contentlayer/generated/index.mjs',
+      },
       rules: {
         '*.svg': {
           loaders: ['@svgr/webpack'],
