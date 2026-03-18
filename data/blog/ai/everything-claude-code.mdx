@@ -1,0 +1,96 @@
+---
+title: Everything Claude Code
+date: '2026-03-11'
+tags: ['ai']
+draft: false
+---
+
+# Everything Claude Code
+
+Everything Claude Code is best understood as a workflow pack for Claude Code, not a single feature. It gives you reusable skills and agents for each stage of development: setup, research, planning, testing, review, verification, and cleanup.
+
+## Core Workflow
+
+The default mental model is:
+
+**Research -> Plan -> TDD -> Review -> Verify -> Commit**
+
+That sequence matters more than any individual command. The plugin is opinionated about a few things:
+
+- research before building custom solutions
+- tests before implementation
+- language-specific best practices
+- review and verification before shipping
+
+## What It Covers
+
+### 1. Project setup
+
+- `/everything-claude-code:configure-ecc` installs skills and rules at the user or project level.
+
+### 2. Research and planning
+
+- `/everything-claude-code:search-first` looks for existing libraries, patterns, and prior art before you write code.
+- `/everything-claude-code:plan` turns a vague request into a concrete implementation plan and pauses for confirmation before changes.
+
+### 3. Implementation and testing
+
+- `/everything-claude-code:tdd-workflow` enforces a test-first loop.
+- Language-specific skills such as `/everything-claude-code:frontend-patterns`, `/everything-claude-code:backend-patterns`, `/everything-claude-code:python-patterns`, and `/everything-claude-code:golang-patterns` push the implementation toward idiomatic code.
+
+### 4. Review and verification
+
+- Review agents such as `/everything-claude-code:code-reviewer`, `/everything-claude-code:security-review`, `/everything-claude-code:python-review`, and `/everything-claude-code:go-review` catch quality and security issues after changes.
+- `/everything-claude-code:verification-loop` runs the final validation pass: build, lint, tests, coverage, and diff review.
+
+### 5. Maintenance and learning
+
+- `/everything-claude-code:refactor-cleaner` removes dead code and unused dependencies.
+- `/everything-claude-code:doc-updater` refreshes docs and codemaps after meaningful changes.
+- `/everything-claude-code:continuous-learning` and `/everything-claude-code:continuous-learning-v2` capture repeatable patterns from real sessions.
+- `/everything-claude-code:security-scan` checks Claude configuration for risky settings or injection problems.
+
+## Scenario 1: Starting a New Project
+
+If I were bootstrapping a project with Everything Claude Code, I would usually follow this order:
+
+1. `/everything-claude-code:configure-ecc`
+2. `/everything-claude-code:search-first`
+3. `/everything-claude-code:plan`
+4. `/everything-claude-code:tdd-workflow`
+5. `/everything-claude-code:security-review`
+6. `/everything-claude-code:verification-loop`
+
+In practice, that means:
+
+- install the right skills and rules
+- research existing solutions before building from scratch
+- agree on a plan before touching code
+- write tests first
+- review for quality and security
+- verify everything before commit or deploy
+
+## Scenario 2: Refactoring an Existing Project
+
+For a refactor, the workflow shifts slightly:
+
+1. `/everything-claude-code:plan`
+2. `/everything-claude-code:refactor-cleaner`
+3. Apply the relevant language or framework pattern skill
+4. Run the appropriate review agent
+5. `/everything-claude-code:verification-loop`
+6. `/everything-claude-code:doc-updater`
+
+A good example stack mapping looks like this:
+
+- React or Next.js: `/everything-claude-code:frontend-patterns`
+- Node.js services: `/everything-claude-code:backend-patterns`
+- Django apps: `/everything-claude-code:django-patterns`
+- Spring Boot services: `/everything-claude-code:springboot-patterns`
+- Go services: `/everything-claude-code:golang-patterns`
+
+## Takeaway
+
+The real value of Everything Claude Code is not that it gives you more commands. It gives you a repeatable engineering loop with stronger defaults: research first, test first, review aggressively, and verify before shipping.
+
+You can invoke the skills explicitly with the `/everything-claude-code:*` prefix, but many of the patterns are most useful when they become your default way of working.

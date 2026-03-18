@@ -1,0 +1,138 @@
+---
+title: Manage Python versions with uv
+date: '2025-07-27 07:30:00'
+tags: ['python']
+draft: false
+---
+
+`uv` is an extremely fast Python package and project manager that can also manage Python versions directly, eliminating the need for other tools like `pyenv`.
+
+# Install uv
+
+```bash
+brew install uv
+```
+
+# Python version management
+
+## List available and installed versions
+
+To see what's installed on your system and what's available for download:
+
+```bash
+uv python list
+```
+
+## Install specific versions
+
+You can install multiple versions of Python side-by-side:
+
+```bash
+uv python install 3.12 3.13
+```
+
+`uv` will automatically select the latest patch release (e.g., 3.13.1).
+
+## Pin a version for a project
+
+To set a specific Python version for your current project, use `uv python pin`. This creates a `.python-version` file:
+
+```bash
+uv python pin 3.13
+```
+
+## Uninstall versions
+
+To clean up old versions:
+
+```bash
+uv python uninstall 3.11
+```
+
+# Using Python with uv
+
+## Automatic version management
+
+One of the best features of `uv` is that it will **automatically download** the required Python version if it's not found on your system when you run a command:
+
+```bash
+# Even if 3.10 is not installed, uv will download it and run the script
+uv run --python 3.10 main.py
+```
+
+## Creating environments
+
+When creating a virtual environment, you can specify the version:
+
+```bash
+uv venv --python 3.13
+```
+
+## Project-based versions
+
+When you run `uv init`, it creates a `pyproject.toml` and potentially a `.python-version` file. `uv` will respect these files and use the correct Python version for all `uv run` and `uv sync` commands.
+
+```bash
+# Initialize a project with a specific version
+uv init --python 3.13
+```
+
+# Package management
+
+`uv` manages dependencies by updating `pyproject.toml` and generating a fast, cross-platform `uv.lock` file.
+
+## Add and remove packages
+
+```bash
+# Add a package
+uv add requests
+
+# Add multiple packages
+uv add fastapi htmx
+
+# Remove a package
+uv remove requests
+```
+
+## Development dependencies
+
+Use the `--dev` flag for tools only needed during development (like linters or test runners):
+
+```bash
+uv add --dev pytest ruff
+```
+
+## Syncing dependencies
+
+To ensure your virtual environment matches your lockfile exactly (especially after pulling changes):
+
+```bash
+uv sync
+```
+
+Also include development dependencies:
+
+```bash
+uv sync --extra dev
+```
+
+## Updating dependencies
+
+To update a specific package to the latest version:
+
+```bash
+uv add requests@latest
+```
+
+Or update all dependencies in the lockfile:
+
+```bash
+uv lock --upgrade
+```
+
+# Useful commands
+
+- `uv python find`: Show the path to the Python executable for a given version.
+- `uv run python`: Start a REPL using the project's Python version.
+- `uv tree`: Display the dependency tree.
+- `uv help`: Show all available commands.
