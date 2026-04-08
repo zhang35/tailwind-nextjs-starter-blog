@@ -1,0 +1,111 @@
+---
+title: 'Grafana - Logs, Traces, and Metrics'
+date: '2026-04-08'
+tags: ['infra', 'observability', 'grafana']
+draft: false
+summary: 'A practical guide to the Three Pillars of Observability — Metrics, Logs, and Traces — and how Grafana ties them together for effective debugging.'
+---
+
+In Grafana (and modern observability in general), **Logs**, **Traces**, and **Metrics** are known as the **Three Pillars of Observability**. They each serve a distinct purpose when monitoring and debugging applications.
+
+## Overview
+
+| Pillar | Question Answered | Grafana Backend |
+| ------- | ----------------- | --------------- |
+| Metrics | "What is happening?" | Prometheus / Grafana Mimir |
+| Logs | "Why did it happen?" | Grafana Loki |
+| Traces | "Where is the bottleneck?" | Grafana Tempo |
+
+---
+
+## 1. Metrics — The "What"
+
+Metrics are numeric measurements recorded over time. They give you a bird's-eye view of the overall health and performance of your system.
+
+**Example:**
+
+```
+cpu_usage_percentage{host="server-1"} 85.5
+```
+
+**What it answers:**
+
+- "Is there a problem right now?"
+- "What is the overall trend?" (e.g., "Our error rate just spiked from 1% to 15%," or "Memory usage is slowly creeping up.")
+
+**Characteristics:**
+
+- Highly compressible and cheap to store for long periods
+- Very fast to query
+- Best choice for triggering **Alerts** and building high-level **Dashboards**
+
+**Grafana Backend:** [Prometheus](https://prometheus.io/) or [Grafana Mimir](https://grafana.com/oss/mimir/)
+
+---
+
+## 2. Logs — The "Why"
+
+Logs are discrete, timestamped text records of specific events that occurred within your application or system.
+
+**Example:**
+
+```
+2026-04-08 10:15:02 ERROR [PaymentService] Connection refused to database db-cluster-1
+```
+
+**What it answers:**
+
+- "Why did this specific problem happen?"
+- Once a metric alerts you to a spike in errors, you look at the logs to find the exact error message or stack trace.
+
+**Characteristics:**
+
+- Contains the deepest, most granular context about a specific event
+- Can be expensive to store at high volumes and slower to query than metrics
+
+**Grafana Backend:** [Grafana Loki](https://grafana.com/oss/loki/) — designed to be highly efficient by only indexing labels (much like Prometheus), rather than full-text indexing the entire log line.
+
+---
+
+## 3. Traces — The "Where"
+
+A trace represents the **end-to-end journey of a single user request** as it travels through a distributed system (especially microservices). A trace is made up of **spans**, where each span represents a specific operation or service call.
+
+**Example — a waterfall chart:**
+
+```
+User Request      ████████████████████████  2.0s
+  Auth Service    ██                        0.1s
+  Billing Service ██████████████████████    1.9s
+    DB Query      █████████████████████     1.8s
+```
+
+**What it answers:**
+
+- "Where exactly is the bottleneck?"
+- "Which specific microservice is causing the request to fail?"
+- If a user complains a page is slow, a trace shows you exactly which backend service or database query took the longest.
+
+**Characteristics:**
+
+- Essential for debugging complex, distributed microservice architectures
+- Shows the relationship and timing between different services
+
+**Grafana Backend:** [Grafana Tempo](https://grafana.com/oss/tempo/)
+
+---
+
+## How They Work Together — The Debugging Workflow
+
+A typical debugging workflow in Grafana seamlessly links all three pillars:
+
+1. **Metrics → Detect:** You receive a Slack alert from Prometheus because the latency metric for your API spiked.
+
+2. **Traces → Isolate:** You click the alert, which opens a Grafana dashboard. Using **Exemplars** (links from metrics to traces), you click on a specific slow request to view its Trace in Tempo. The trace shows you that the `UserDatabase` service took 5 seconds.
+
+3. **Logs → Root Cause:** From that specific span in the trace, you click a button to view the Logs in Loki for that exact service, at that exact millisecond. The log reveals:
+   ```
+   Query timeout: Index missing on table 'users'
+   ```
+
+> Use **Metrics** to detect the issue, **Traces** to isolate where it happened, and **Logs** to find the root cause.
