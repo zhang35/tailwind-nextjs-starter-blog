@@ -5,11 +5,40 @@ tags: ['ai']
 draft: false
 ---
 
-# Everything Claude Code
+# Be an expert of Claude Code
 
-Everything Claude Code is best understood as a workflow pack for Claude Code, not a single feature. It gives you reusable skills and agents for each stage of development: setup, research, planning, testing, review, verification, and cleanup.
+## Concepts
 
-## Core Workflow
+- Rules: 总会被加载的prompt, 相当于system prompt, 可以分散写到 `.rules/` 文件中(模块化), 也可以整个写到 `CLAUDE.md`里。
+- Skills: 按需加载的prompt, 一般描述一个工作流, 比如 `/refactor-cleaner` 描述了清理代码的工作流.
+- Commands: 按需加载的prompt, 其实就是简短版Skills.
+- Hooks: 根据事件触发的操作，比如 `PreToolUse  - Before a tool executes (validation, reminders)`.
+- MCPs: 调用外部工具。
+- Subagents: 子agent, 开一个分支, 拥有独立上下文, 也可以指定另外的model. 比如开一个code-reviewer subagent, 用`Haiku`模型。
+
+## 插件库
+
+### Everything Claude Code
+
+Everything Claude Code 是一个plugin, 集成了各种Rules、Skills、Commands、Hooks、Subagents, 快速帮你初始化Claude配置, 相当于构建代码框架时的脚手架。
+
+文档：
+
+- [Everything Claude Code - The Guides](https://github.com/affaan-m/everything-claude-code?tab=readme-ov-file#the-guides)
+- [The Shorthand Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2012378465664745795)
+- [The Longform Guide to Everything Claude Code](https://x.com/affaanmustafa/status/2014040193557471352)
+
+### Planning with Files
+
+- [Planning with Files](https://github.com/othmanadi/planning-with-files)
+
+## 最佳实践
+
+- 按需配置MCP, 它非常消耗上下文。
+- 先用plan mode, 再执行开发。
+- 按开发进度, 手动run `/compact` 命令, 别等被动压缩。
+
+## 工作流示例
 
 The default mental model is:
 
